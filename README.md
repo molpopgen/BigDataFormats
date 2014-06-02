@@ -10,6 +10,7 @@ We will start with gzip output, which is probably what most people will think of
 
 1.  File output size isn't too big, but we want to write feweer larger files rather than millions of tiny files.
 2.  We should generally write large blocks of data, rather than printing to a file every time we get an answer
+3.  We should be able to seek within our files.  The ability to seek means that we can write a second (small) file telling us where every data record begins.  This "index" lets us rapidly move around the file to where records start, meaning we don't need to start reading from the top of the file each time we wish to find a specific data point.
 
 Gzipped
 =======
