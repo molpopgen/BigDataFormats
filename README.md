@@ -110,7 +110,7 @@ Pros of gzip:
 Cons:
 
 1. Not totally convenient.  Have to read data back into buffers and then convert it to desired formats.  Bit of a drag.
-2. 
+
 Binary
 ======
 
