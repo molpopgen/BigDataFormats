@@ -4,6 +4,8 @@ This document covers various ways to handle large data sets, with an emphasis on
 
 Example code is centered on C/C++, and a basic understanding of those languages is assumed.
 
+We will start with gzip output, which is probably what most people will think of when wishing to move beyond plain text.  gzip is a great format, but not necessarily the most convenient for programming in languages like C/C++.  As we move down the list of formats and techniques, we'll end up with formats that are more and more convenient, while also being very efficient.
+
 #What features do we want in our "Big Data" programs?
 
 1.  File output size isn't too big, but we want to write feweer larger files rather than millions of tiny files.
@@ -97,6 +99,16 @@ int main( int argc, char ** argv )
 }
 ```
 
+Pros of gzip:
+
+1. Small output
+2. Files are seekable and appendable.  This means you can build external indexes to rapidly find your data, etc.
+3. Efficient
+
+Cons:
+
+1. Not totally convenient.  Have to read data back into buffers and then convert it to desired formats.  Bit of a drag.
+2. 
 Binary
 ======
 
