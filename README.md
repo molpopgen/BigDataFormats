@@ -8,7 +8,7 @@ Gzipped
 =======
 A gzipped or ".gz" file is probably the simplest way to move away from plain text files.  The final output is the same, but the file size is much smaller.
 
-You get .gz output via the use of the [zlib](http://zlib.net) run-time library.  This library is a C-language interface to gzip compression, and provideds function-for-function analogs to the C-library <stdio.h> read, write, fscanf, etc. that C programmers will be familiar with.
+You get .gz output via the use of the [zlib](http://zlib.net) run-time library.  This library is a C-language interface to gzip compression, and provideds function-for-function analogs to the C-library \<stdio.h\> read, write, fscanf, etc. that C programmers will be familiar with.
 
 
 Binary
