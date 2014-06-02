@@ -50,7 +50,9 @@ int main( int argc, char ** argv )
   
   /* there is no gzscanf!!!, so we use gzread, and we must read into a char * buffer */
   rv=gzread( gzfp, buffer, sizeof(double) );
-  
+  x = -1.; /* set to -1 to prove that conversion works*/
+  x = strtod(buffer,NULL);
+  fprintf(stderr,"%d %lf %s\n",rv,x,buffer);
   fprintf(stderr,"%d %s\n",rv,buffer);
   
   exit(0);
