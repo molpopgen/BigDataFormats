@@ -261,6 +261,39 @@ for( unsigned i = 0 ; i < NROWS ; ++i )
 
 The above two code blocks can easily be done using the write and read functions in C, as shown in the above examples.
 
+General guidelines for binary output are:
+
+1.  Keep it simple.  Allow for entire vectors to be slurped in.
+2.  If you want to read your files into [R](http://r-project.org), don't be too clever!  Any knowledgable programmer reading this has already realized that files can be made smaller by using types with fewer bits, etc.  That is true.  However, it means you really will need to document the format precisely, and you'll need to get intimate with how R treats variable sizes.  Personally, I stick to integers (signed and unsigned), floating-point, and character strings.  I skip short ints, bools, etc.
+
+##Reading binary in R
+
+For anything other than character data, use readBin:
+
+```r 
+ f = file("file.bin","rb"); #open for reading in binary mode
+nrecs = readBin(f, "integer", 1) #read in number of records
+x=readBin(f, "numeric", nrecs) #read in nrecs floating-points, which are sizeof(double)
+```
+
+You can even read in a matrix:
+
+```r 
+ f = file("file.bin","rb"); #open for reading in binary mode
+ ncol = readBin(f,"integer",1)
+ nrow = readBin(f,"integer",1)
+ m=matrix( readBin(f,"numeric", ncol*nrow), ncol = ncol, byrow = TRUE)
+ ```
+
+And yes, it is very fast.
+
+To read in character data, use readChar (presumably after reading in the length of the string using readBin!):
+
+```r
+name = readChar( f, 10 ) #reads in 10 characters
+```
+
+
 Gzipped binary
 ======
 
