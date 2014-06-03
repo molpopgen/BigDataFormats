@@ -36,7 +36,6 @@ int main( int argc, char ** argv )
       if ( buffer.str().size() >= MBUFFER )
 	//If buffer hits our max size in memory, print it to file and clear it.
 	{
-	  cerr << "Writing buffer of length " << buffer.str().size() << '\n';
 	  o.write( buffer.str().c_str(), buffer.str().size() );
 	  buffer.str( string() );
 	}
