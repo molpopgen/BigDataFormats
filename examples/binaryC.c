@@ -5,7 +5,6 @@
   Note: the -lm is implied by the C++ compiler, 
   but can be included. 
 */
-#inc
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
