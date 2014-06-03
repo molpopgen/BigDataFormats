@@ -173,7 +173,7 @@ The following two programs are identical in terms of what they are doing.  The f
 int main( int argc, char ** argv )
 {
   /* A buffer to store our stuff*/
-  size_t MBUFFERSIZE = 10000;
+  size_t MBUFFERSIZE = 1000000;
   double * dbuffer = (double *)malloc(MBUFFERSIZE*sizeof(double)),
    * dbuffer2 = (double *)malloc(MBUFFERSIZE*sizeof(double));
   FILE * fp;
@@ -276,7 +276,7 @@ The example is trivially changed to C++ by replacing arrays with vectors, using 
 int main( int argc, char ** argv )
 {
   /* A buffer to store our stuff*/
-  size_t MBUFFERSIZE = 10000;
+  size_t MBUFFERSIZE = 1000000;
   double * dbuffer = (double *)malloc(MBUFFERSIZE*sizeof(double)),
    * dbuffer2 = (double *)malloc(MBUFFERSIZE*sizeof(double));
   FILE * fp;
@@ -384,7 +384,7 @@ ostringstream buffer;
 
   	ofstream o("testCpp3.bin",ios::out | ios::binary );
 
-  	for( size_t i = 0 ; i < 10000 ; ++i )
+  	for( size_t i = 0 ; i < 1000000 ; ++i )
     	{
       		double x = sqrt(i)/double(i);
       		buffer.write( reinterpret_cast<char *>(&x), 
@@ -428,7 +428,13 @@ ostringstream buffer;
 }
 ```
 
-This "full C++" example is easy to code, but has one major problem.  It is probably at least 2x slower than either of the two previous implementations.  Why?  The answer is almost certainly the use of C++ streams for writing/reading to/from files.  The streams are simply slower that C's I/O routines.  (To be fair, the C++ routines do a lot of nice checking for you at run-time that C doesn't do, which is where the tradeoff is.)
+This "full C++" example is easy to code, but which of the above is the fastest?  Testing on my powerbook (OS X Mavericks w/clang-503.0.40) gives the following benchmarks:
+
+1. Full C version = 0.060 seconds
+2. Trivially-C++ version = 0.067s
+3. Full-C++ version = 0.252 seconds.
+
+
 Gzipped binary
 ======
 
