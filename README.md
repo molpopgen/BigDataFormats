@@ -13,6 +13,16 @@ We will start with gzip output, which is probably what most people will think of
 3.  We should be able to seek within our files.  The ability to seek means that we can write a second (small) file telling us where every data record begins.  This "index" lets us rapidly move around the file to where records start, meaning we don't need to start reading from the top of the file each time we wish to find a specific data point.
 4.  The format should not result in loss of precision.  Typically, when one writes floating-point numbers to a file, they are rounded.  We would like a format that avoids this, allowing us to read back in exatly what our program stored.
 
+##How to seek, etc.
+
+For very large data sets, some sort of meaningul index is handy.   The simplest index is a plain-text file that gives the position (in bytes) where a data record begins in a file.  For example:
+
+|Record Name | Offset|
+|----|:-----:|
+| chr1 | 0 |
+| chr2 | 1024 |
+| chr3 | 4096 |
+
 Gzipped
 =======
 A gzipped or ".gz" file is probably the simplest way to move away from plain text files.  The final output is the same, but the file size is much smaller.
