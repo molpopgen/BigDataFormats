@@ -112,6 +112,21 @@ Cons:
 
 1. Not totally convenient.  Have to read data back into buffers and then convert it to desired formats.  Bit of a drag.
 
+##Note
+There are many more advanced functions in zlib other than the higher-level analogs to the _stdio.h_ functions.  The library source comes with examples of use.  These functions are lower-level and more complex, but provider finer control over reading/writing from compressed streams.
+
+##Compiling against zlib
+Simply add this at link time:
+```
+-lz
+```
+
+For example:
+
+```{sh}
+cc -o gzexample gzexample.cc -O2 -Wall -W -lz
+```
+
 Binary
 ======
 
