@@ -8,3 +8,6 @@ time ./binaryCpp
 
 echo "full Cpp"
 time ./binaryCpp2
+
+echo "Mixed C/Cpp"
+time ./binary_C_Cpp

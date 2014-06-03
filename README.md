@@ -434,7 +434,80 @@ This "full C++" example is easy to code, but which of the above is the fastest? 
 2. Trivially-C++ version = 0.067s
 3. Full-C++ version = 0.252 seconds.
 
-Why is the "full C++" the slowest?  It is almost certainly due to reading/writing using iostreams/fstreams.  Those objects do more run-time checking than their C counterparts, and the tradeoff is speed.
+Why is the "full C++" the slowest?  A lot of it is due to the buffering using ostringstream.  We can get most of the speed back by buffering into a vector<double> rather than an ostringstream, which is shown in the following example.  (We get even more speed back by replacing C++ fstreams with C data types.)
+
+```{c++}
+/*
+  To compile:
+  c++ -o binaryCpp3 binaryCpp3.c -O2 -Wall -W
+  
+  Note: the -lm is implied by the C++ compiler, 
+  but can be included. 
+ */
+#include <cstdio>
+#include <cmath>
+#include <cstdlib>
+#include <cstdio>
+#include <vector>
+#include <sstream> //used for buffering
+#include <iostream> //for cout,cerr
+#include <fstream> //use for C++ streams to files
+/*
+  Rather than stdio.h, we
+  use the lower-level fcntl.h.
+*/
+#include <fcntl.h>
+#include <unistd.h> /* Needed only on OS X */
+
+using namespace std;
+
+int main( int argc, char ** argv )
+{
+  const size_t MBUFFER = 1024; //Max. buffer size in 1024*sizeof(double) bytes
+  vector<double> buffer;
+  buffer.reserve( MBUFFER );
+  ofstream o("testCpp3.bin",ios::out | ios::binary );
+
+  for( size_t i = 0 ; i < 1000000 ; ++i )
+    {
+      buffer.push_back(sqrt(i)/double(i));
+      if ( buffer.size() >= MBUFFER )
+	//If buffer hits our max size in memory, print it to file and clear it.
+	{
+	  o.write( reinterpret_cast< char * >(&buffer[0]), buffer.size()*sizeof(double) );
+	  buffer.clear();
+	}
+    }
+  //Pro tip: your amount of output % MBUFFER is probably != 0!!!
+  if( !buffer.empty() )
+    {
+      o.write( reinterpret_cast< char * >(&buffer[0]), buffer.size()*sizeof(double) );
+      buffer.clear();
+    }
+  o.close();
+
+  //read it back in
+  vector<double> data;
+  ifstream in("testCpp3.bin",ios::in | ios::binary);
+  double x;
+  do
+    {
+      in.read( reinterpret_cast<char *>(&x), sizeof(double) );
+      if(!in.eof() && !in.fail())
+	{
+	  data.push_back(x);
+	}
+    }
+  while( ! in.eof() && !in.fail() );
+
+  cerr << data.size() << " doubles read from file\n";
+
+  for( size_t i = 0 ; i < 10 ; ++i )
+    {
+      cout << "Element " << i << " = " << buffer[i] << " and " << data[i] << '\n';
+    }
+}
+```
 Gzipped binary
 ======
 
