@@ -434,7 +434,7 @@ This "full C++" example is easy to code, but which of the above is the fastest? 
 2. Trivially-C++ version = 0.067s
 3. Full-C++ version = 0.252 seconds.
 
-
+Why is the "full C++" the slowest?  It is almost certainly due to reading/writing using iostreams/fstreams.  Those objects do more run-time checking than their C counterparts, and the tradeoff is speed.
 Gzipped binary
 ======
 
