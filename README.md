@@ -167,14 +167,14 @@ The following two programs are identical in terms of what they are doing.  The f
 
 ##Example in C:
 
-The first example in C is [here](examples/binaryC.c).
+The first example in C is [here](examples/binary/binaryC.c).
 
 This example buffers data in a pointer to doubles and shows how to use either the low-level open function for creating files or how to use a mix of fopen/fileno to be able to later call write() for writing to files.
 
 ##Mixed C/C++ example
 The example is trivially changed to C++ by replacing arrays with vectors, using the C++ versions of the headers, and declaring variables when we need them.
 
-[Trivial C++ example](examples/binaryCpp.cc)
+[Trivial C++ example](examples/binary/binaryCpp.cc)
 
 
 ##A "Full-C++" example
@@ -185,7 +185,7 @@ The above C++ example is not very insightful, as it basically uses the bare mini
 3. Write to a buffer and flush the buffer to a file when it gets full.  This mimics what we want to do in real-world programs, which is to internally buffer large chunks of data in order to avoid small writes to files.
 4. Doing everything the "C++ way", _e.g._ doing everything with objects rather than C functions.
 
-["Full-c++" example](examples/binaryCpp2.cc)
+["Full-c++" example](examples/binary/binaryCpp2.cc)
 
 This "full C++" example is easy to code, but which of the above is the fastest?  Testing on my powerbook (OS X Mavericks w/clang-503.0.40) gives the following benchmarks:
 
@@ -200,7 +200,7 @@ We can get most of the speed back by buffering into a vector<double> rather than
 
 This example takes 0.086 seconds on my machine, in between the fastest and slowest examples above:
 
-[Example of buffering in a vector\<double\>](examples/binaryCpp3.cc)
+[Example of buffering in a vector\<double\>](examples/binary/binaryCpp3.cc)
 
 I take this as evidence that C++ input/output streams are not as slow as many people fear.
 
