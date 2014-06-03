@@ -15,7 +15,7 @@ We will start with gzip output, which is probably what most people will think of
 
 ##How to seek, etc.
 
-For very large data sets, some sort of meaningul index is handy.   The simplest index is a plain-text file that gives the position (in bytes) where a data record begins in a file.  For example:
+For very large data sets, some sort of meaningful index is handy.   The simplest index is a plain-text file that gives the position (in bytes) where a data record begins in a file.  For example:
 
 |Record Name | Offset|
 |----|:-----:|
