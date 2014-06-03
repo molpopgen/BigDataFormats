@@ -1,6 +1,6 @@
 /*
   To compile:
-  c++ -o binaryC binaryC.c -O2 -Wall -W
+  c++ -o binaryCpp binaryCpp.c -O2 -Wall -W
   
   Note: the -lm is implied by the C++ compiler, 
   but can be included. 
