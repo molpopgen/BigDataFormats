@@ -21,8 +21,6 @@ You get .gz output via the use of the [zlib](http://zlib.net) run-time library. 
 
 The zlib [manual](http://zlib.net/manual.html) is excellent and straightforward.  I recommend making sure that you have version >= 1.2.5 on your system, which provides the _gzbuffer_ function.
 
-The basics (C):
-
 ```{c}
 #include <zlib.h>
 #include <stdlib.h>
@@ -164,196 +162,14 @@ The following two programs are identical in terms of what they are doing.  The f
 
 ##Example in C:
 
-```{c}
-/*
-  To compile
-  cc -o binaryC binaryC.c -O2 -Wall -W -lm
-*/
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-/*
-  Rather than stdio.h, we
-  use the lower-level fcntl.h.
-*/
-#include <fcntl.h>
-#include <unistd.h> /* Needed only on OS X */
-
-int main( int argc, char ** argv )
-{
-  /* A buffer to store our stuff*/
-  size_t MBUFFERSIZE = 1000000;
-  double * dbuffer = (double *)malloc(MBUFFERSIZE*sizeof(double)),
-   * dbuffer2 = (double *)malloc(MBUFFERSIZE*sizeof(double));
-  FILE * fp;
-  size_t i;
-  /* file descriptor */
-  int fd,rv;
-
-  for( i = 0 ; i < MBUFFERSIZE ; ++i )
-    {
-      dbuffer[i] = sqrt(i)/((double)i); /*will force some inf*/
-    }
-  
-  /*For convenience, use stdio.h routines to open file*/
-  fp = fopen("testC.bin","wb");
-
-  /*Get the "file descriptor" associated with the file handle*/
-  fd = fileno(fp);
-
-  /*Write the buffer to the file descriptor*/
-  rv = write( fd, dbuffer, MBUFFERSIZE*sizeof(double) );
-
-  printf("%d bytes written\n",rv);
-
-  /*close the file*/
-  fclose(fp);
-
-  /*Now, read it back in...*/
-
-  fp = fopen("testC.bin","rb");
-
-  fd = fileno(fp);
-
-  rv = read(fd, dbuffer2, MBUFFERSIZE*sizeof(double) );
-
-  printf("%d bytes read\n",rv);
-
-  for( i = 0 ; i < 10 ; ++i )
-    {
-      printf("Element %ld = %lf and %lf\n",i,dbuffer[i],dbuffer2[i]);
-    }
-
-  fclose(fp);
-
-  /*
-    Alternative approach to opening the file
-    that only uses file descriptors.
-    
-    Technially, all of our I/O can be
-    done via fcntl/unistd, but that low-level
-    world means dealing with file permissions 
-    when opening, always knowing how many bytes
-    you are writing, etc. (for example, to
-    write a message to stderr).  Thus,
-    there is a loss of convenience.
-
-    For open(), PERMISSIONS MATTER!!!
-
-    We are opening the file with user and group read/write permissions
-    both set to "true".
-
-    Failing to do so causes problems.
-  */
-  fd = open("testC_2.bin",O_RDWR|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
-
-  if (fd == -1)
-    {
-      fprintf(stderr,"Error upon opening\n");
-      exit(1);
-    }
-
-  write(fd,dbuffer,MBUFFERSIZE*sizeof(double));
-
-  close(fd);
-  }
-```
+The first example in C is [here](examples/binaryC.c).
 
 ##Mixed C/C++ example
-The example is trivially changed to C++ by replacing arrays with vectors, using the C++ versions of the headers, and declaring variables when we need them:
+The example is trivially changed to C++ by replacing arrays with vectors, using the C++ versions of the headers, and declaring variables when we need them.
 
-```{c++}
-/*
-  To compile:
-  c++ -o binaryCpp binaryCpp.cc -O2 -Wall -W
+[Trivial C++ example](examples/binaryCpp.cc)
 
-  Note: the -lm is implied by the C++ compiler, 
-  but can be included. 
-*/
-#inc
-#include <stdio.h>
-#include <math.h>
-#include <stdlib.h>
-#include <stdio.h>
-/*
-  Rather than stdio.h, we
-  use the lower-level fcntl.h.
-*/
-#include <fcntl.h>
-#include <unistd.h> /* Needed only on OS X */
 
-int main( int argc, char ** argv )
-{
-  /* A buffer to store our stuff*/
-  size_t MBUFFERSIZE = 1000000;
-  double * dbuffer = (double *)malloc(MBUFFERSIZE*sizeof(double)),
-   * dbuffer2 = (double *)malloc(MBUFFERSIZE*sizeof(double));
-  FILE * fp;
-  size_t i;
-  /* file descriptor */
-  int fd,rv;
-
-  for( i = 0 ; i < MBUFFERSIZE ; ++i )
-    {
-      dbuffer[i] = sqrt(i)/((double)i); /*will force some inf*/
-    }
-  
-  /*For convenience, use stdio.h routines to open file*/
-  fp = fopen("testC.bin","wb");
-
-  /*Get the "file descriptor" associated with the file handle*/
-  fd = fileno(fp);
-
-  /*Write the buffer to the file descriptor*/
-  rv = write( fd, dbuffer, MBUFFERSIZE*sizeof(double) );
-
-  printf("%d bytes written\n",rv);
-
-  /*close the file*/
-  fclose(fp);
-
-  /*Now, read it back in...*/
-
-  fp = fopen("testC.bin","rb");
-
-  fd = fileno(fp);
-
-  rv = read(fd, dbuffer2, MBUFFERSIZE*sizeof(double) );
-
-  printf("%d bytes read\n",rv);
-
-  for( i = 0 ; i < 10 ; ++i )
-    {
-      printf("Element %ld = %lf and %lf\n",i,dbuffer[i],dbuffer2[i]);
-    }
-
-  fclose(fp);
-
-  /*
-    Alternative approach to opening the file
-    that only uses file descriptors
-
-    For open(), PERMISSIONS MATTER!!!
-
-    We are opening the file with user and group read/write permissions
-    both set to "true".
-
-    Failing to do so causes problems.
-  */
-  fd = open("testC_2.bin",O_RDWR|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
-
-  if (fd == -1)
-    {
-      fprintf(stderr,"Error upon opening\n");
-      exit(1);
-    }
-
-  write(fd,dbuffer,MBUFFERSIZE*sizeof(double));
-
-  close(fd);
-}
-```
 ##A "Full-C++" example
 The above C++ example is not very insightful, as it basically uses the bare minimum of C++'s features.  Let's look at a C++ implementation that uses more of that language's features.  This example will introduce the following:
 
@@ -362,81 +178,7 @@ The above C++ example is not very insightful, as it basically uses the bare mini
 3. Write to a buffer and flush the buffer to a file when it gets full.  This mimics what we want to do in real-world programs, which is to internally buffer large chunks of data in order to avoid small writes to files.
 4. Doing everything the "C++ way", _e.g._ doing everything with objects rather than C functions.
 
-```{c++}
-/*
-  To compile:
-  c++ -o binaryCpp2 binaryCpp2.cc -O2 -Wall -W
-  
-  Note: the -lm is implied by the C++ compiler, 
-  but can be included. 
- */
-#include <cstdio>
-#include <cmath>
-#include <cstdlib>
-#include <cstdio>
-#include <vector>
-#include <sstream> //used for buffering
-#include <iostream> //for cout,cerr
-#include <fstream> //use for C++ streams to files
-/*
-	Rather than stdio.h, we
-	use the lower-level fcntl.h.
-*/
-#include <fcntl.h>
-#include <unistd.h> /* Needed only on OS X */
-
-using namespace std;
-
-int main( int argc, char ** argv )
-{
-const size_t MBUFFER = 1024; //Max. buffer size in bytes
-ostringstream buffer;
-
-  	ofstream o("testCpp3.bin",ios::out | ios::binary );
-
-  	for( size_t i = 0 ; i < 1000000 ; ++i )
-    	{
-      		double x = sqrt(i)/double(i);
-      		buffer.write( reinterpret_cast<char *>(&x), 
-      				sizeof(double) );//write binary representation of x to buffer's stream
-		if ( buffer.str().size() >= MBUFFER )
-		//If buffer hits our max size in memory, print it to file and clear it.
-		{
-	  		cerr << "Writing buffer of length " << buffer.str().size() << '\n';
-	  		o.write( buffer.str().c_str(), buffer.str().size() );
-	  		buffer.str( string() );
-		}
-	}
-  	//Pro tip: your amount of output % MBUFFER is probably != 0!!!
-	if( !buffer.str().empty() )
-    	{
-      		o.write( buffer.str().c_str(), buffer.str().size() );
-      		buffer.str( string() );
-    	}
-  	o.close();
-
-  	//read it back in
-  	vector<double> data;
-  	ifstream in("testCpp3.bin",ios::in | ios::binary);
-  	double x;
-  	do
-	{
-		in.read( reinterpret_cast<char *>(&x), sizeof(double) );
-		if(!in.eof() && !in.fail())
-		{
-			data.push_back(x);
-		}
-	}
-  	while( ! in.eof() && !in.fail() );
-
-  	cerr << data.size() << " doubles read from file\n";
-
-  	for( size_t i = 0 ; i < 10 ; ++i )
-    	{
-      		cout << "Element " << i << " = " << sqrt(i)/double(i) << " and " << data[i] << '\n';
-    	}
-}
-```
+["Full-c++" example](examples/binaryCpp2.cc)
 
 This "full C++" example is easy to code, but which of the above is the fastest?  Testing on my powerbook (OS X Mavericks w/clang-503.0.40) gives the following benchmarks:
 
@@ -451,80 +193,7 @@ We can get most of the speed back by buffering into a vector<double> rather than
 
 This example takes 0.086 seconds on my machine, in between the fastest and slowest examples above:
 
-[Example](examples/binaryCpp3.cc)
-
-```{c++}
-/*
-  To compile:
-  c++ -o binaryCpp3 binaryCpp3.cc -O2 -Wall -W
-  
-  Note: the -lm is implied by the C++ compiler, 
-  but can be included. 
- */
-#include <cstdio>
-#include <cmath>
-#include <cstdlib>
-#include <cstdio>
-#include <vector>
-#include <sstream> //used for buffering
-#include <iostream> //for cout,cerr
-#include <fstream> //use for C++ streams to files
-/*
-  Rather than stdio.h, we
-  use the lower-level fcntl.h.
-*/
-#include <fcntl.h>
-#include <unistd.h> /* Needed only on OS X */
-
-using namespace std;
-
-int main( int argc, char ** argv )
-{
-  const size_t MBUFFER = 1024; //Max. buffer size in 1024*sizeof(double) bytes
-  vector<double> buffer;
-  buffer.reserve( MBUFFER );
-  ofstream o("testCpp4.bin",ios::out | ios::binary );
-
-  for( size_t i = 0 ; i < 1000000 ; ++i )
-    {
-      buffer.push_back(sqrt(i)/double(i));
-      if ( buffer.size() >= MBUFFER )
-	//If buffer hits our max size in memory, print it to file and clear it.
-	{
-	  o.write( reinterpret_cast< char * >(&buffer[0]), buffer.size()*sizeof(double) );
-	  buffer.clear();
-	}
-    }
-  //Pro tip: your amount of output % MBUFFER is probably != 0!!!
-  if( !buffer.empty() )
-    {
-      o.write( reinterpret_cast< char * >(&buffer[0]), buffer.size()*sizeof(double) );
-      buffer.clear();
-    }
-  o.close();
-
-  //read it back in
-  vector<double> data;
-  ifstream in("testCpp4.bin",ios::in | ios::binary);
-  double x;
-  do
-    {
-      in.read( reinterpret_cast<char *>(&x), sizeof(double) );
-      if(!in.eof() && !in.fail())
-	{
-	  data.push_back(x);
-	}
-    }
-  while( ! in.eof() && !in.fail() );
-
-  cerr << data.size() << " doubles read from file\n";
-
-  for( size_t i = 0 ; i < 10 ; ++i )
-    {
-      cout << "Element " << i << " = " << buffer[i] << " and " << data[i] << '\n';
-    }
-}
-```
+[Example of buffering in a vector\<double\>](examples/binaryCpp3.cc)
 
 ##Design considerations
 
