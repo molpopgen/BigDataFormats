@@ -152,7 +152,7 @@ The cons are:
 
 The following two programs are identical in terms of what they are doing.  The first is in C and writes to files via file descriptors.  The second is in C++ and works via output streams.  Typically, I use a mix of C and C++ to try to maximize the convenience of object-oriented programming (C++) with the very fast I/O routines of C.
 
-Example in C:
+##Example in C:
 
 ```{c}
 /*
@@ -250,6 +250,7 @@ int main( int argc, char ** argv )
   }
 ```
 
+##Mixed C/C++ example
 The example is trivially changed to C++ by replacing arrays with vectors, using the C++ versions of the headers, and declaring variables when we need them:
 
 ```{c++}
@@ -343,8 +344,8 @@ int main( int argc, char ** argv )
   close(fd);
 }
 ```
-
-The above is not very insightful.  Let's look at a C++ implementation that uses more of that language's features.  This example will introduce the following:
+##A "Full-C++" example
+The above C++ example is not very insightful, as it basically uses the bare minimum of C++'s features.  Let's look at a C++ implementation that uses more of that language's features.  This example will introduce the following:
 
 1. The use of reinterpret_cast to convert data types to a binary representation.
 2. The use of the write() member function of streams for writing the binary representations.
@@ -408,13 +409,13 @@ ostringstream buffer;
   	ifstream in("testCpp3.bin",ios::in | ios::binary);
   	double x;
   	do
-    	{
-      		in.read( reinterpret_cast<char *>(&x), sizeof(double) );
-      		if(!in.eof() && !in.fail())
+	{
+		in.read( reinterpret_cast<char *>(&x), sizeof(double) );
+		if(!in.eof() && !in.fail())
 		{
-	  		data.push_back(x);
+			data.push_back(x);
 		}
-    	}
+	}
   	while( ! in.eof() && !in.fail() );
 
   	cerr << data.size() << " doubles read from file\n";
