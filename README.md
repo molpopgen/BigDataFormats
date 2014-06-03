@@ -266,7 +266,7 @@ The example is trivially changed to C++ by replacing arrays with vectors, using 
 ```{c++}
 /*
   To compile:
-  c++ -o binaryC binaryC.c -O2 -Wall -W
+  c++ -o binaryCpp binaryCpp.cc -O2 -Wall -W
 
   Note: the -lm is implied by the C++ compiler, 
   but can be included. 
@@ -365,7 +365,7 @@ The above C++ example is not very insightful, as it basically uses the bare mini
 ```{c++}
 /*
   To compile:
-  c++ -o binaryCpp2 binaryCpp2.c -O2 -Wall -W
+  c++ -o binaryCpp2 binaryCpp2.cc -O2 -Wall -W
   
   Note: the -lm is implied by the C++ compiler, 
   but can be included. 
