@@ -259,6 +259,8 @@ for( unsigned i = 0 ; i < NROWS ; ++i )
 	}
 ```
 
+The above two code blocks can easily be done using the write and read functions in C, as shown in the above examples.
+
 Gzipped binary
 ======
 
