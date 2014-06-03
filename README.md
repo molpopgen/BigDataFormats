@@ -155,6 +155,77 @@ The following two programs are identical in terms of what they are doing.  The f
 Example in C:
 
 ```{c}
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+/*
+  Rather than stdio.h, we
+  use the lower-level fcntl.h.
+*/
+#include <fcntl.h>
+#include <unistd.h> /* Needed only on OS X */
+
+int main( int argc, char ** argv )
+{
+  /* A buffer to store our stuff*/
+  size_t MBUFFERSIZE = 10000;
+  double * dbuffer = (double *)malloc(MBUFFERSIZE*sizeof(double)),
+   * dbuffer2 = (double *)malloc(MBUFFERSIZE*sizeof(double));
+  FILE * fp;
+  size_t i;
+  /* file descriptor */
+  int fd,rv;
+
+  for( i = 0 ; i < MBUFFERSIZE ; ++i )
+    {
+      dbuffer[i] = sqrt(i)/((double)i); /*will force some inf*/
+    }
+  
+  /*For convenience, use stdio.h routines to open file*/
+  fp = fopen("testC.bin","wb");
+
+  /*Get the "file descriptor" associated with the file handle*/
+  fd = fileno(fp);
+
+  /*Write the buffer to the file descriptor*/
+  rv = write( fd, dbuffer, MBUFFERSIZE*sizeof(double) );
+
+  printf("%d bytes written\n",rv);
+
+  /*close the file*/
+  fclose(fp);
+
+  /*Now, read it back in...*/
+
+  fp = fopen("testC.bin","rb");
+
+  fd = fileno(fp);
+
+  rv = read(fd, dbuffer2, MBUFFERSIZE*sizeof(double) );
+
+  printf("%d bytes read\n",rv);
+
+  for( i = 0 ; i < 10 ; ++i )
+    {
+      printf("Element %ld = %lf and %lf\n",i,dbuffer[i],dbuffer2[i]);
+    }
+
+  fclose(fp);
+
+  /*
+    Alternative approach to opening the file
+    that only uses file descriptors
+    (Still debugging)
+  */
+  fd = open("testC_2.bin",O_RDWR|O_APPEND);
+
+  if (fd == -1)
+    {
+      fprintf(stderr,"Error upon opening\n");
+      exit(1);
+    }
+}
 ```
 
 Example in C++
