@@ -148,6 +148,7 @@ The cons are:
 3.  Strictly speaking, the files are not portable between systems (unless special care is taken regarding the sizes of data types used in programs).  However, the code to read/write them is portable.
 4.  Because of points 1 and 2, errors in binary output can be tricky to track down.  Hint:  do plain-text output first, then modify the code to output binary later.
 5.  You may want to write your data out differently from how you'd write a plain-text file.  More on this later.
+6.  They are nowhere near as small as a compressed format like zlib/gz.
 
 ##What are we going to learn?
 
