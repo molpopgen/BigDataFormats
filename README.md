@@ -448,6 +448,8 @@ Why is the "full C++" the slowest?  A lot of it is due to the buffering using os
 ##How you buffer matters!
 We can get most of the speed back by buffering into a vector<double> rather than an ostringstream, which is shown in the following example.  (We get even more speed back by replacing C++ fstreams with C data types.)
 
+This example takes 0.086 seconds on my machine, in between the fastest and slowest examples above:
+
 ```{c++}
 /*
   To compile:
