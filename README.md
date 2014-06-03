@@ -250,11 +250,176 @@ int main( int argc, char ** argv )
   }
 ```
 
-Example in C++
+The example is trivially changed to C++ by replacing arrays with vectors, using the C++ versions of the headers, and declaring variables when we need them:
 
 ```{c++}
+/*
+  To compile:
+  c++ -o binaryC binaryC.c -O2 -Wall -W
+
+  Note: the -lm is implied by the C++ compiler, 
+  but can be included. 
+*/
+#inc
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+/*
+  Rather than stdio.h, we
+  use the lower-level fcntl.h.
+*/
+#include <fcntl.h>
+#include <unistd.h> /* Needed only on OS X */
+
+int main( int argc, char ** argv )
+{
+  /* A buffer to store our stuff*/
+  size_t MBUFFERSIZE = 10000;
+  double * dbuffer = (double *)malloc(MBUFFERSIZE*sizeof(double)),
+   * dbuffer2 = (double *)malloc(MBUFFERSIZE*sizeof(double));
+  FILE * fp;
+  size_t i;
+  /* file descriptor */
+  int fd,rv;
+
+  for( i = 0 ; i < MBUFFERSIZE ; ++i )
+    {
+      dbuffer[i] = sqrt(i)/((double)i); /*will force some inf*/
+    }
+  
+  /*For convenience, use stdio.h routines to open file*/
+  fp = fopen("testC.bin","wb");
+
+  /*Get the "file descriptor" associated with the file handle*/
+  fd = fileno(fp);
+
+  /*Write the buffer to the file descriptor*/
+  rv = write( fd, dbuffer, MBUFFERSIZE*sizeof(double) );
+
+  printf("%d bytes written\n",rv);
+
+  /*close the file*/
+  fclose(fp);
+
+  /*Now, read it back in...*/
+
+  fp = fopen("testC.bin","rb");
+
+  fd = fileno(fp);
+
+  rv = read(fd, dbuffer2, MBUFFERSIZE*sizeof(double) );
+
+  printf("%d bytes read\n",rv);
+
+  for( i = 0 ; i < 10 ; ++i )
+    {
+      printf("Element %ld = %lf and %lf\n",i,dbuffer[i],dbuffer2[i]);
+    }
+
+  fclose(fp);
+
+  /*
+    Alternative approach to opening the file
+    that only uses file descriptors
+
+    For open(), PERMISSIONS MATTER!!!
+
+    We are opening the file with user and group read/write permissions
+    both set to "true".
+
+    Failing to do so causes problems.
+  */
+  fd = open("testC_2.bin",O_RDWR|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
+
+  if (fd == -1)
+    {
+      fprintf(stderr,"Error upon opening\n");
+      exit(1);
+    }
+
+  write(fd,dbuffer,MBUFFERSIZE*sizeof(double));
+
+  close(fd);
+}
 ```
 
+The above is not very insightful.  Let's look at a C++ implementation that uses more of that language's features:
+
+```{c++}
+/*
+  To compile:
+  c++ -o binaryCpp2 binaryCpp2.c -O2 -Wall -W
+  
+  Note: the -lm is implied by the C++ compiler, 
+  but can be included. 
+ */
+#include <cstdio>
+#include <cmath>
+#include <cstdlib>
+#include <cstdio>
+#include <vector>
+#include <sstream> //used for buffering
+#include <iostream> //for cout,cerr
+#include <fstream> //use for C++ streams to files
+/*
+  Rather than stdio.h, we
+  use the lower-level fcntl.h.
+*/
+#include <fcntl.h>
+#include <unistd.h> /* Needed only on OS X */
+
+using namespace std;
+
+int main( int argc, char ** argv )
+{
+  const size_t MBUFFER = 1024; //Max. buffer size in bytes
+  ostringstream buffer;
+
+  ofstream o("testCpp3.bin",ios::out | ios::binary );
+
+  for( size_t i = 0 ; i < 10000 ; ++i )
+    {
+      double x = sqrt(i)/double(i);
+      buffer.write( reinterpret_cast<char *>(&x), sizeof(double) );//write binary representation of x to buffer's stream
+      if ( buffer.str().size() >= MBUFFER )
+	//If buffer hits our max size in memory, print it to file and clear it.
+	{
+	  cerr << "Writing buffer of length " << buffer.str().size() << '\n';
+	  o.write( buffer.str().c_str(), buffer.str().size() );
+	  buffer.str( string() );
+	}
+    }
+  //Pro tip: your amount of output % MBUFFER is probably != 0!!!
+  if( !buffer.str().empty() )
+    {
+      o.write( buffer.str().c_str(), buffer.str().size() );
+      buffer.str( string() );
+    }
+  o.close();
+
+  //read it back in
+  vector<double> data;
+  ifstream in("testCpp3.bin",ios::in | ios::binary);
+  double x;
+  do
+    {
+      in.read( reinterpret_cast<char *>(&x), sizeof(double) );
+      if(!in.eof() && !in.fail())
+	{
+	  data.push_back(x);
+	}
+    }
+  while( ! in.eof() && !in.fail() );
+
+  cerr << data.size() << " doubles read from file\n";
+
+  for( size_t i = 0 ; i < 10 ; ++i )
+    {
+      cout << "Element " << i << " = " << sqrt(i)/double(i) << " and " << data[i] << '\n';
+    }
+}
+```
 
 Gzipped binary
 ======
