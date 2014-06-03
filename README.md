@@ -270,15 +270,15 @@ General guidelines for binary output are:
 
 For anything other than character data, use readBin:
 
-```r 
- f = file("file.bin","rb"); #open for reading in binary mode
+```{r} 
+f = file("file.bin","rb"); #open for reading in binary mode
 nrecs = readBin(f, "integer", 1) #read in number of records
 x=readBin(f, "numeric", nrecs) #read in nrecs floating-points, which are sizeof(double)
 ```
 
 You can even read in a matrix:
 
-```r 
+```{r}
  f = file("file.bin","rb"); #open for reading in binary mode
  ncol = readBin(f,"integer",1)
  nrow = readBin(f,"integer",1)
@@ -289,7 +289,7 @@ And yes, it is very fast.
 
 To read in character data, use readChar (presumably after reading in the length of the string using readBin!):
 
-```r
+```{r}
 name = readChar( f, 10 ) #reads in 10 characters
 ```
 
