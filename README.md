@@ -164,6 +164,8 @@ The following two programs are identical in terms of what they are doing.  The f
 
 The first example in C is [here](examples/binaryC.c).
 
+This example buffers data in a pointer to doubles and shows how to use either the low-level open function for creating files or how to use a mix of fopen/fileno to be able to later call write() for writing to files.
+
 ##Mixed C/C++ example
 The example is trivially changed to C++ by replacing arrays with vectors, using the C++ versions of the headers, and declaring variables when we need them.
 
@@ -194,6 +196,8 @@ We can get most of the speed back by buffering into a vector<double> rather than
 This example takes 0.086 seconds on my machine, in between the fastest and slowest examples above:
 
 [Example of buffering in a vector\<double\>](examples/binaryCpp3.cc)
+
+I take this as evidence that C++ input/output streams are not as slow as many people fear.
 
 ##Design considerations
 
