@@ -126,6 +126,10 @@ For example:
 cc -o gzexample gzexample.cc -O2 -Wall -W -lz
 ```
 
+##What about boost?
+
+The [boost](http://www.boost.org) libraries have advanced stream classes that let you read/write gzip and bzip data.  These are super-awesome, in that they allow direct reading and writing to compressed files for any objects that have input and output operators defined for them.  However, the input streams are not seekable, which is a major drawback for us.  If you attempt to seek to a point in a gzip stream using boost, the stream goes into a bad/fail state.  I do not know why this is the case (zlib supports seeking, and is the base for the boost impementation), but it is what it is, so we move on.  Sad.
+
 Binary
 ======
 Rather than write data in plain text, we may prefer to write it in the native "binary" format that the computer natively understands.
