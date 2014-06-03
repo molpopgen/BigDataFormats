@@ -394,9 +394,9 @@ ostringstream buffer;
 	  		o.write( buffer.str().c_str(), buffer.str().size() );
 	  		buffer.str( string() );
 		}
-    	}
+	}
   	//Pro tip: your amount of output % MBUFFER is probably != 0!!!
-  	if( !buffer.str().empty() )
+	if( !buffer.str().empty() )
     	{
       		o.write( buffer.str().c_str(), buffer.str().size() );
       		buffer.str( string() );
