@@ -23,6 +23,8 @@ For very large data sets, some sort of meaningul index is handy.   The simplest 
 | chr2 | 1024 |
 | chr3 | 4096 |
 
+Typically, the offset will be stored as a long int.  This is fairly obvious in [C](http://www.cplusplus.com/reference/cstdio/ftell/).  It is a little more obsurce in C++, as the type is called [streampos](http://www.cplusplus.com/reference/ios/streampos/).  Usually, you can use long int or long long int, and most programs will be fine.
+
 Gzipped
 =======
 A gzipped or ".gz" file is probably the simplest way to move away from plain text files.  The final output is the same, but the file size is much smaller.
