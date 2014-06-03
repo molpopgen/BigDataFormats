@@ -155,6 +155,10 @@ The following two programs are identical in terms of what they are doing.  The f
 Example in C:
 
 ```{c}
+/*
+  To compile
+  cc -o binaryC binaryC.c -O2 -Wall -W -lm
+*/
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
