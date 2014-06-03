@@ -202,6 +202,15 @@ I take this as evidence that C++ input/output streams are not as slow as many pe
 
 ##Design considerations
 
+Binary files are essentially a vomit of raw data to a file.  No white space, newlines, etc.  Worse, you cannot read them by eye, so you have to know the precise format of the output in order to read it back in.  That means you really need to document the format precisely.  Better yet, provide a function to read in the data using the same language used to write the data.
+
+A big plus of binary data is that you can read directly into vectors.  For example, this "just works"
+
+```c++
+vector<double> x(NUMRECORDS); //assume NUMRECORDS is set, and is correct!
+in.read( reinterpret_cast< char * >(&x[0]), NUMRECORDS * sizeof(double) );
+```
+
 Gzipped binary
 ======
 
