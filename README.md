@@ -130,6 +130,33 @@ cc -o gzexample gzexample.cc -O2 -Wall -W -lz
 
 Binary
 ======
+Rather than write data in plain text, we may prefer to write it in the native "binary" format that the computer natively understands.
+
+To do so, we must convert our data to raw bits and write those bits to a file.  The result is a file that is not human-readable and contains no whitespace.
+
+The pros of binary files are:
+1.  Very fast to read/write from
+2.  Smaller than plain text files
+3.  Our data are not rounded
+
+The cons are:
+1.  They are not human readable.
+2.  Their format must be carefully documented in order to be read back in correctly.
+3.  Strictly speaking, the files are not portable between systems (unless special care is taken regarding the sizes of data types used in programs).  However, the code to read/write them is portable.
+4.  Because of points 1 and 2, errors in binary output can be tricky to track down.  Hint:  do plain-text output first, then modify the code to output binary later.
+5.  You may want to write your data out differently from how you'd write a plain-text file.  More on this later.
+
+The following two programs are identical in terms of what they are doing.  The first is in C and writes to files via file descriptors.  The second is in C++ and works via output streams.  Typically, I use a mix of C and C++ to try to maximize the convenience of object-oriented programming (C++) with the very fast I/O routines of C.
+
+Example in C:
+
+```{c}
+```
+
+Example in C++
+
+```{c++}
+```
 
 
 Gzipped binary
