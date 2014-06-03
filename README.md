@@ -135,11 +135,15 @@ Rather than write data in plain text, we may prefer to write it in the native "b
 To do so, we must convert our data to raw bits and write those bits to a file.  The result is a file that is not human-readable and contains no whitespace.
 
 The pros of binary files are:
+
 1.  Very fast to read/write from
 2.  Smaller than plain text files
 3.  Our data are not rounded
+4.  No additional libraries are needed (support is built-into most languages).
+5.  Files can be read by other languages, such as [R]{http://r-project.org}
 
 The cons are:
+
 1.  They are not human readable.
 2.  Their format must be carefully documented in order to be read back in correctly.
 3.  Strictly speaking, the files are not portable between systems (unless special care is taken regarding the sizes of data types used in programs).  However, the code to read/write them is portable.
