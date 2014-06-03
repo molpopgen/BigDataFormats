@@ -235,6 +235,7 @@ int main( int argc, char ** argv )
   write(fd,dbuffer,MBUFFERSIZE*sizeof(double));
 
   close(fd);
+  }
 ```
 
 Example in C++
