@@ -216,16 +216,25 @@ int main( int argc, char ** argv )
   /*
     Alternative approach to opening the file
     that only uses file descriptors
-    (Still debugging)
+
+    For open(), PERMISSIONS MATTER!!!
+
+    We are opening the file with user and group read/write permissions
+    both set to "true".
+
+    Failing to do so causes problems.
   */
-  fd = open("testC_2.bin",O_RDWR|O_APPEND);
+  fd = open("testC_2.bin",O_RDWR|O_CREAT,S_IRUSR|S_IWUSR|S_IRGRP|S_IWGRP);
 
   if (fd == -1)
     {
       fprintf(stderr,"Error upon opening\n");
       exit(1);
     }
-}
+
+  write(fd,dbuffer,MBUFFERSIZE*sizeof(double));
+
+  close(fd);
 ```
 
 Example in C++
