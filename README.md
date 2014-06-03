@@ -293,6 +293,7 @@ To read in character data, use readChar (presumably after reading in the length 
 name = readChar( f, 10 ) #reads in 10 characters
 ```
 
+There are also writeBin and writeChar, for output.
 
 Gzipped binary
 ======
