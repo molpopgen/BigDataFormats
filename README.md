@@ -141,6 +141,7 @@ The pros of binary files are:
 3.  Our data are not rounded
 4.  No additional libraries are needed (support is built-into most languages).
 5.  Files can be read by other languages, such as [R]{http://r-project.org}
+6.  A __big__ pro of binary format is how it treats floating point values.  When a calculation returns a non-finite value (inf or NaN, meaning infinity and not-a-number, respectively), writing those to a plain-text file does something interesting.  In a plain-text file, non-finite floating values are written in such a way that _they cannot be read back into floating-point data types directly_!  Rather, you must parse them as strings, check what the string says, and then use the correct [function](http://www.cplusplus.com/reference/cstdlib/strtold/) or [class](http://www.cplusplus.com/reference/limits/numeric_limits/) to return the desired floating-point equivalent.  Having to do this is obnoxious.  Worse, failure to do these conversions will often result in the input loop of your program hanging, becoming an infinite loop.  Binary files avoid this problem entirely.  An inf or a NaN are written to the file in their native representations, and can be read back out directly.  In other words, binary files help us meet some of our main goals of convenience and having a format that represents exactly what was stored by our program.
 
 The cons are:
 
@@ -450,10 +451,13 @@ We can get most of the speed back by buffering into a vector<double> rather than
 
 This example takes 0.086 seconds on my machine, in between the fastest and slowest examples above:
 
+```{c++,file=examples/binaryCpp3.cc}
+```
+
 ```{c++}
 /*
   To compile:
-  c++ -o binaryCpp3 binaryCpp3.c -O2 -Wall -W
+  c++ -o binaryCpp3 binaryCpp3.cc -O2 -Wall -W
   
   Note: the -lm is implied by the C++ compiler, 
   but can be included. 
@@ -480,7 +484,7 @@ int main( int argc, char ** argv )
   const size_t MBUFFER = 1024; //Max. buffer size in 1024*sizeof(double) bytes
   vector<double> buffer;
   buffer.reserve( MBUFFER );
-  ofstream o("testCpp3.bin",ios::out | ios::binary );
+  ofstream o("testCpp4.bin",ios::out | ios::binary );
 
   for( size_t i = 0 ; i < 1000000 ; ++i )
     {
@@ -502,7 +506,7 @@ int main( int argc, char ** argv )
 
   //read it back in
   vector<double> data;
-  ifstream in("testCpp3.bin",ios::in | ios::binary);
+  ifstream in("testCpp4.bin",ios::in | ios::binary);
   double x;
   do
     {
