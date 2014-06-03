@@ -344,7 +344,11 @@ int main( int argc, char ** argv )
 }
 ```
 
-The above is not very insightful.  Let's look at a C++ implementation that uses more of that language's features:
+The above is not very insightful.  Let's look at a C++ implementation that uses more of that language's features.  This example will introduce the following:
+
+1. The use of reinterpret_cast to convert data types to a binary representation.
+2. The use of the write() member function of streams for writing the binary representations.
+3. Doing everything the "C++ way", _e.g._ doing everything with objects rather than C functions.
 
 ```{c++}
 /*
@@ -363,8 +367,8 @@ The above is not very insightful.  Let's look at a C++ implementation that uses 
 #include <iostream> //for cout,cerr
 #include <fstream> //use for C++ streams to files
 /*
-  Rather than stdio.h, we
-  use the lower-level fcntl.h.
+	Rather than stdio.h, we
+	use the lower-level fcntl.h.
 */
 #include <fcntl.h>
 #include <unistd.h> /* Needed only on OS X */
@@ -373,8 +377,8 @@ using namespace std;
 
 int main( int argc, char ** argv )
 {
-	const size_t MBUFFER = 1024; //Max. buffer size in bytes
-  	ostringstream buffer;
+const size_t MBUFFER = 1024; //Max. buffer size in bytes
+ostringstream buffer;
 
   	ofstream o("testCpp3.bin",ios::out | ios::binary );
 
