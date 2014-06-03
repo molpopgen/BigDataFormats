@@ -211,11 +211,53 @@ vector<double> x(NUMRECORDS); //assume NUMRECORDS is set, and is correct!
 in.read( reinterpret_cast< char * >(&x[0]), NUMRECORDS * sizeof(double) );
 ```
 
-If you imagine your data as a spreadsheet like this:
+Imagine you have data that you would store in a spreadsheet like this:
 
 |Name | Index | Value|
 |----|:-----:|-----|
 | name1 | 0 | 0.001 |
+| name2 | 7 | -1.23 |
+| name3 | 5 | NaN |
+
+It would be tedious to read in each string, then each integer, then each double, etc.  Instead, you may wish to have your output data organized like this:
+
+1.  An unsigned integer stating how many rows there are.  Let's call this NROWS.
+2.  Then, the NROWS index values.  These may be short, int, unsigned, etc., depending on your're needs.
+3.  Then, the NROWS Value values.  Based on the table, these are some sort of floating-point value.
+4.  Then, the NROWS Name value.
+
+How does one write out all those names?  With no whitespace separator, you need to do one of two things:
+
+1.  Write every string as a fixed-width number of characters.  I never do this.
+2.  Write each string as an unsigned integer representing its length, followed by that many characters.
+
+I always take the second option:
+
+```c++
+string x("I am a string!");
+unsigned xlen = x.size();
+out.write( reinterpret_cast<char *>(&xlen), sizeof(unsigned) );
+out.write( x.c_str(), x.size() ); //no nead to multiply by sizeof(char) here...
+```
+
+That does make strings trickier to read back in:
+
+```c++
+vector<string> names(NROWS);
+unsigned stringlen;
+vector<char> temp;
+for( unsigned i = 0 ; i < NROWS ; ++i )
+	{
+		in.read( reinterpret_cast<char *>(&stringlen), sizeof(unsigned) );
+		if( stringlen > temp.size() )
+		{
+			//only allocate new space when necessary!
+			temp.resize( stringlen );
+		}
+		in.read( reinterpret_cast< char * >(&temp[0]), stringlen*sizeof(char) );
+		names[i].assign(temp.begin(),temp.begin() + stringlen);  //use iterator arithmetic in case stringlen < temp.size()!!!
+	}
+```
 
 Gzipped binary
 ======
