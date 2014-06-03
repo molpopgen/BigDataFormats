@@ -349,7 +349,8 @@ The above C++ example is not very insightful, as it basically uses the bare mini
 
 1. The use of reinterpret_cast to convert data types to a binary representation.
 2. The use of the write() member function of streams for writing the binary representations.
-3. Doing everything the "C++ way", _e.g._ doing everything with objects rather than C functions.
+3. Write to a buffer and flush the buffer to a file when it gets full.  This mimics what we want to do in real-world programs, which is to internally buffer large chunks of data in order to avoid small writes to files.
+4. Doing everything the "C++ way", _e.g._ doing everything with objects rather than C functions.
 
 ```{c++}
 /*
