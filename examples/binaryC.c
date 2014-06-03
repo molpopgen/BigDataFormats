@@ -19,7 +19,7 @@
 int main( int argc, char ** argv )
 {
   /* A buffer to store our stuff*/
-  size_t MBUFFERSIZE = 10000;
+  size_t MBUFFERSIZE = 1000000;
   double * dbuffer = (double *)malloc(MBUFFERSIZE*sizeof(double)),
    * dbuffer2 = (double *)malloc(MBUFFERSIZE*sizeof(double));
   FILE * fp;

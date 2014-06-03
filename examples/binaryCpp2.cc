@@ -26,10 +26,10 @@ int main( int argc, char ** argv )
 {
   const size_t MBUFFER = 1024; //Max. buffer size in bytes
   ostringstream buffer;
-
   ofstream o("testCpp3.bin",ios::out | ios::binary );
 
-  for( size_t i = 0 ; i < 10000 ; ++i )
+
+  for( size_t i = 0 ; i < 1000000 ; ++i )
     {
       double x = sqrt(i)/double(i);
       buffer.write( reinterpret_cast<char *>(&x), sizeof(double) );//write binary representation of x to buffer's stream

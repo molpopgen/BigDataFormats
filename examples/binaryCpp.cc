@@ -20,7 +20,7 @@
 int main( int argc, char ** argv )
 {
   /* A buffer to store our stuff*/
-  size_t MBUFFERSIZE = 10000;
+  size_t MBUFFERSIZE = 1000000;
   std::vector<double> dbuffer(MBUFFERSIZE),dbuffer2(MBUFFERSIZE);
 
   for( size_t i = 0 ; i < MBUFFERSIZE ; ++i )
