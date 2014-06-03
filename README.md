@@ -150,6 +150,15 @@ The cons are:
 4.  Because of points 1 and 2, errors in binary output can be tricky to track down.  Hint:  do plain-text output first, then modify the code to output binary later.
 5.  You may want to write your data out differently from how you'd write a plain-text file.  More on this later.
 
+##What are we going to learn?
+
+In the examples, the following will become apparent:
+
+1.  There are multiple ways to write binary output to files.  They boil down to C's "write" function and C++'s write function, which is a member function of stream classes.
+2.  There are tradeoffs to make between convenience and efficiency.  More on this after the examples.
+
+##Examples
+
 The following two programs are identical in terms of what they are doing.  The first is in C and writes to files via file descriptors.  The second is in C++ and works via output streams.  Typically, I use a mix of C and C++ to try to maximize the convenience of object-oriented programming (C++) with the very fast I/O routines of C.
 
 ##Example in C:
@@ -434,7 +443,10 @@ This "full C++" example is easy to code, but which of the above is the fastest? 
 2. Trivially-C++ version = 0.067s
 3. Full-C++ version = 0.252 seconds.
 
-Why is the "full C++" the slowest?  A lot of it is due to the buffering using ostringstream.  We can get most of the speed back by buffering into a vector<double> rather than an ostringstream, which is shown in the following example.  (We get even more speed back by replacing C++ fstreams with C data types.)
+Why is the "full C++" the slowest?  A lot of it is due to the buffering using ostringstream.
+
+##How you buffer matters!
+We can get most of the speed back by buffering into a vector<double> rather than an ostringstream, which is shown in the following example.  (We get even more speed back by replacing C++ fstreams with C data types.)
 
 ```{c++}
 /*
@@ -508,6 +520,9 @@ int main( int argc, char ** argv )
     }
 }
 ```
+
+##Design considerations
+
 Gzipped binary
 ======
 
