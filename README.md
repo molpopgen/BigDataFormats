@@ -426,6 +426,7 @@ ostringstream buffer;
 }
 ```
 
+This "full C++" example is easy to code, but has one major problem.  It is probably at least 2x slower than either of the two previous implementations.  Why?  The answer is almost certainly the use of C++ streams for writing/reading to/from files.  The streams are simply slower that C's I/O routines.  (To be fair, the C++ routines do a lot of nice checking for you at run-time that C doesn't do, which is where the tradeoff is.)
 Gzipped binary
 ======
 
