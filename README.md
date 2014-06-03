@@ -215,7 +215,15 @@ int main( int argc, char ** argv )
 
   /*
     Alternative approach to opening the file
-    that only uses file descriptors
+    that only uses file descriptors.
+    
+    Technially, all of our I/O can be
+    done via fcntl/unistd, but that low-level
+    world means dealing with file permissions 
+    when opening, always knowing how many bytes
+    you are writing, etc. (for example, to
+    write a message to stderr).  Thus,
+    there is a loss of convenience.
 
     For open(), PERMISSIONS MATTER!!!
 
