@@ -451,7 +451,7 @@ We can get most of the speed back by buffering into a vector<double> rather than
 
 This example takes 0.086 seconds on my machine, in between the fastest and slowest examples above:
 
-[Example]{examples/binaryCpp3.cc}
+[Example](examples/binaryCpp3.cc)
 
 ```{c++}
 /*
