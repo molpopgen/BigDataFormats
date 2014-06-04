@@ -1,5 +1,7 @@
 /*
   Example of gzwrite using binary data
+
+  cc -o gzwrite gzwrite.c -lm -lgz
  */
 #include <zlib.h>
 
