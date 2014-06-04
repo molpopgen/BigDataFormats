@@ -291,10 +291,13 @@ General guidelines for binary output are:
 
 For anything other than character data, use readBin:
 
-```{r} 
-f = file("file.bin","rb"); #open for reading in binary mode
-nrecs = readBin(f, "integer", 1) #read in number of records
-x=readBin(f, "numeric", nrecs) #read in nrecs floating-points, which are sizeof(double)
+```{R} 
+ #open for reading in binary mode
+f = file("file.bin","rb")
+ #read in number of records
+nrecs = readBin(f, "integer", 1)
+ #read in nrecs floating-points, which are sizeof(double)
+x=readBin(f, "numeric", nrecs)
 ```
 
 You can even read in a matrix:
