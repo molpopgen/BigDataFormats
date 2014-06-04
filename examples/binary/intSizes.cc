@@ -48,7 +48,7 @@ int main( int argc, char ** argv )
   vector< smaller_int > vi8_in(vi8.size());
 
   in1.read( reinterpret_cast<char*>(vi_in.data()), vi_in.size()*sizeof(int) );
-  in2.read( reinterpret_cast<char*>(vi8_in.data()), vi8_in.size()*sizeof(int) );
+  in2.read( reinterpret_cast<char*>(vi8_in.data()), vi8_in.size()*sizeof(smaller_int) );
 
   for( size_t i = 0 ; i < vi.size() ; ++i )
     {
