@@ -291,7 +291,7 @@ General guidelines for binary output are:
 
 For anything other than character data, use readBin:
 
-``` 
+```{r}
 #open for reading in binary mode
 f = file("file.bin","rb")
 #read in number of records
