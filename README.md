@@ -539,6 +539,28 @@ If a program writes to an output file and does not use file locking, you may use
 mkfifo temp
 program -o temp &
 cat temp | atomic_locker id_number indexfilename outfilename
+rm -f temp
 ```
 
 The above command will buffer the output from "program" into a memory buffer called "temp".  We then cat that output through atomic\_locker and write it to a new file. 
+
+In the context of an array job, each named pipe needs to be unique:
+
+```{sh}
+#!/bin/sh
+
+#$ -q queuename
+#$ -t 1-1000
+
+cd $SGE_O_WORKDIR
+
+#make the named pipe for job i:
+PIPENAME=npipe.$SGE_TASK_ID
+mkfifo $PIPENAME
+#run the program, with $PIPENAME
+program -o $PIPENAME &
+#process the info buffered into the named pipe
+cat $PIPENAME | atomic_locker $SGE_TASK_ID index.txt output.txt
+#cleanup
+rm -f $PIPENAME
+```
