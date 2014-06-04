@@ -293,7 +293,7 @@ General guidelines for binary output are:
 
 ##Examples of binary formats
 
-Here are some examples from my own work
+Here are some examples from my own work.  Both of these use an approach similar to run-lenght encoding (RLE) to avoid writing out entire data blocks.
 
 1.  [Reading/writing output from coalescent simulations](https://github.com/molpopgen/libsequence/blob/master/src/SimDataIO.cc).
 2.  Output from forward simulation.  Specific simulation input/output is governed by custom policy classes.  Example is [here](https://github.com/molpopgen/fwdpp/blob/master/examples/diploid_binaryIO_ind.cc).
