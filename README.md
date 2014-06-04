@@ -27,7 +27,19 @@ Typically, the offset will be stored as a long int.  This is fairly obvious in [
 
 ###C functions for seeking
 
+There are two main functions as part of the standard language:
+
+1. [ftell](http://www.cplusplus.com/reference/cstdio/ftell/) tells you where you are in a stream.
+2. [fseek](http://www.cplusplus.com/reference/cstdio/fseek/) takes you from where you are to a different position in the stream.
+
 ###C++ functions for seeking
+
+C++ lets you use the C functions described previously.  In addition to those functions, C++ streams have the following member functions:
+
+1. [tellg](http://www.cplusplus.com/reference/istream/istream/tellg/) tells you where you are in an _input_ stream.
+2. [tellp](http://www.cplusplus.com/reference/ostream/ostream/tellp/) tells you where you are in an _output_ stream.
+3. [seekg](http://www.cplusplus.com/reference/istream/istream/seekg/) seeks to a position in an _input_ stream.
+4. [seekp](http://www.cplusplus.com/reference/ostream/ostream/seekp/) seeks to a position in an _output_ stream.
 
 Writing your plain-text data to a gzip output stream
 =======
@@ -129,7 +141,7 @@ Pros of gzip:
 
 Cons:
 
-1. Not totally convenient.  Have to read data back into buffers and then convert it to desired formats.  Bit of a drag.
+1. Not totally convenient.  Have to read data back into buffers and then convert it to desired formats.  Bit of a drag.  (This con is specific to writing your plain-text data to a gzfile via gzprintf.  We'll fix this below).
 
 ##Note
 There are many more advanced functions in zlib other than the higher-level analogs to the _stdio.h_ functions.  The library source comes with examples of use.  These functions are lower-level and more complex, but provider finer control over reading/writing from compressed streams.
