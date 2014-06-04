@@ -472,24 +472,25 @@ ostringstream buffer;
 gzwrite( gzstream, buffer.str().c_str(), buffer.str().size() );
 ```
 
-File locking
-======
-It is becoming more common for biology researchers to have access to large compute clusters.  These clusters are often campus resources shared between many campus units and therefore have to serve the needs of loads of users.  Some sort of queuing software (such as [OGS](http://gridscheduler.sourceforge.net/) or [SoGE](https://arc.liv.ac.uk/trac/SGE)) will match up a user's need with available resources and the job will run when resources become available.
-
-Large clusters often have some sort of network-mounted storage in the form of a distributed (or clustered) [file system](http://en.wikipedia.org/wiki/Clustered_file_system).  Such file systems make cluster use easier and can result in impressive I/O bandwidth.  However, there is one sure-fire way to overload such systems, and even bring them down.  A job that writes thousands of small files over a long period of time can wreak havok.  Performance of the file system will degrade cluster-wide, and the file system server may even crash.  (Note, different implementations of such file systems are differently-susceptible to this problem.  NFS and gluster don't handle "zillions of tiny files" well.  The [fhgfs](http://www.fhgfs.com/cms/)  system is much more robust in our experience. )
-
-Here is an example of how to use a cluster to create gazillions of tiny files.  This is a hypothetical Grid Engine script that will run 100,000 replicates of a simulation.  Each replicate will be _written to a separate file_.  If this job gets access to hundreds of nodes, the file system may start to freak out and bad things may happen:
-
-```{sh}
-#!/bin/bash
-
-#$ -t 1-100000
-
-cd $SGE_O_WORKDIR
-SEED=`echo "$SGE_TASK_ID*$RANDOM"|bc -l`
-simulate $SEED -o sim_output.$SGE_TASK_ID.txt
-```
-
-
 HDF5
 =====
+
+File locking 
+ ====== 
+ This section describes a technique for managing output, not an output format. 
+ 
+ It is becoming more common for biology researchers to have access to large compute clusters.  These clusters are often campus resources shared between many campus units and therefore have to serve the needs of loads of users.  Some sort of queuing software (such as [OGS](http://gridscheduler.sourceforge.net/) or [SoGE](https://arc.liv.ac.uk/trac/SGE)) will match up a user's need with available resources and the job will run when resources become available. 
+ 
+ Large clusters often have some sort of network-mounted storage in the form of a distributed (or clustered) [file system](http://en.wikipedia.org/wiki/Clustered_file_system).  Such file systems make cluster use easier and can result in impressive I/O bandwidth.  However, there is one sure-fire way to overload such systems, and even bring them down.  A job that writes thousands of small files over a long period of time can wreak havok.  Performance of the file system will degrade cluster-wide, and the file system server may even crash.  (Note, different implementations of such file systems are differently-susceptible to this problem.  NFS and gluster don't handle "zillions of tiny files" well.  The [fhgfs](http://www.fhgfs.com/cms/)  system is much more robust in our experience. ) 
+ 
+ Here is an example of how to use a cluster to create gazillions of tiny files.  This is a hypothetical Grid Engine script that will run 100,000 replicates of a simulation.  Each replicate will be _written to a separate file_.  If this job gets access to hundreds of nodes, the file system may start to freak out and bad things may happen: 
+ 
+ ```{sh} 
+ #!/bin/bash 
+ 
+ #$ -t 1-100000 
+ 
+ cd $SGE_O_WORKDIR 
+ SEED=`echo "$SGE_TASK_ID*$RANDOM"|bc -l` 
+ simulate $SEED -o sim_output.$SGE_TASK_ID.txt 
+ ```
