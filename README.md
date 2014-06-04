@@ -477,7 +477,8 @@ HDF5
 
 File locking 
 ======
- 
+
+##Small files = bad
  This section describes a technique for managing output, not an output format. 
  
  It is becoming more common for biology researchers to have access to large compute clusters.  These clusters are often campus resources shared between many campus units and therefore have to serve the needs of loads of users.  Some sort of queuing software (such as [OGS](http://gridscheduler.sourceforge.net/) or [SoGE](https://arc.liv.ac.uk/trac/SGE)) will match up a user's need with available resources and the job will run when resources become available. 
@@ -495,3 +496,49 @@ File locking
  SEED=`echo "$SGE_TASK_ID*$RANDOM"|bc -l` 
  simulate $SEED -o sim_output.$SGE_TASK_ID.txt 
  ```
+
+How can one avoid writing all of these files, but still be able to use hundreds of cores to run the simulation via the simplicity of array jobs?  If you are programming for a [POSIX](http://en.wikipedia.org/wiki/POSIX) environment (Linux and OS X Mavericks are POSIX-compliant), then you may make use of low-level C funtions enabling "file locking".
+
+##What is file locking?
+
+File locking is a communication between your program and the OS kernel.  When a program wants to write, it may ask the kernel for an exclusive "lock" on the output file.  If no other process is currently locking the file, the requesting process gets the go-ahead and may write.  If the file is locked by another process, the requesting process may decide to wait or quit, etc.  After the process writes, it releases the lock so that another process may access it.
+
+##How to do it (C/C++)?
+
+You make use of the low-level file access function fcntl() in [\<fcntl.h\>](http://pubs.opengroup.org/onlinepubs/000095399/basedefs/fcntl.h.html).  This function lets you control all sorts of things regarding file access.
+
+Some notes are needed:
+
+1. fcntl() works via file descriptors rather than file pointers.  Thus, it is not compatible with C++ streams, which have no descriptor associated with them.  Learn how to use the C function fileno() to get the file descriptor associated with a FILE *!  (The statment about C++ refers to the language standard.  Various extensions exist that provide access to file descriptors.  Not portable, so we don't care.)
+
+##Examples of file locking:
+
+For my own work, the most common case use is simulation, where we need to generate a large number of replicates of the output of the same program.  Such tasks are amenable to array jobs and file locking helps prevent the "lots of output files" problem.
+
+Examples:
+
+1. [locking_routines](https://github.com/molpopgen/locking_routines) is a repo that I maintain so that I can re-use common locking operations.
+2. [here](https://github.com/molpopgen/fwdpp/blob/master/examples/diploid_binaryIO_ind.cc) is a real-world example in the context of a simulation.
+
+##Program design tips
+
+1.  Do not request a lock until your program needs to write.
+2.  Do not open files for writing until your program needs to write.  Buffer output (see above).  Request the lock when the buffer is full, and then open the file for writing.
+3.  You shold open the files in append mode, else each open will truncate the file to 0 bytes!
+4.  Close the file before releasing the lock.
+
+Failure to do any of the above may result in "constipation", where loads of jobs are sitting around waiting for the lock to release.  See the examples for working code that I use routinely on clusters.
+
+##What about programs that you didn't write?
+
+If a program prints to screen, and you cannot modify the code, try [atomic_locker](https://github.com/molpopgen/atomic_locker).  The UCI IT team have written a perl [program](http://moo.nac.uci.edu/~hjm/Job.Array.ZOT.html#_file_locking_with_multiple_processes_writing_to_a_single_file) with similar functionality.
+
+If a program writes to an output file and does not use file locking, you may use named pipes and one of the above solutions:
+
+```{sh}
+mkfifo temp
+program -o temp &
+cat temp | atomic_locker id_number indexfilename outfilename
+```
+
+The above command will buffer the output from "program" into a memory buffer called "temp".  We then cat that output through atomic\_locker and write it to a new file. 
