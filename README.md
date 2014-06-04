@@ -32,6 +32,17 @@ There are two main functions as part of the standard language:
 1. [ftell](http://www.cplusplus.com/reference/cstdio/ftell/) tells you where you are in a stream.
 2. [fseek](http://www.cplusplus.com/reference/cstdio/fseek/) takes you from where you are to a different position in the stream.
 
+The zlib library (see below) provides analagous functions:
+
+(All function descriptions are direct copy/pastes from the zlib [manual](http://zlib.net/manual.html), hence the quotes.)
+
+1. gztell -- "Returns the starting position for the next gzread or gzwrite on the given compressed file. This position represents a number of bytes in the uncompressed data stream, and is zero when starting, even if appending or reading a gzip stream from the middle of a file using gzdopen()."
+2. gzoffset -- "Returns the current offset in the file being read or written. This offset includes the count of bytes that precede the gzip stream, for example when appending or when using gzdopen() for reading. When reading, the offset does not include as yet unused buffered input. This information can be used for a progress indicator. On error, gzoffset() returns –1."
+3. gzseek -- "Sets the starting position for the next gzread or gzwrite on the given compressed file. The offset represents a number of bytes in the uncompressed data stream. The whence parameter is defined as in lseek(2); the value SEEK_END is not supported."
+
+__Note:__ gzseek is emulated for files opened for reading.  It can be slow.  But, it exists, which is very useful.
+
+
 ###C++ functions for seeking
 
 C++ lets you use the C functions described previously.  In addition to those functions, C++ streams have the following member functions:
@@ -40,6 +51,13 @@ C++ lets you use the C functions described previously.  In addition to those fun
 2. [tellp](http://www.cplusplus.com/reference/ostream/ostream/tellp/) tells you where you are in an _output_ stream.
 3. [seekg](http://www.cplusplus.com/reference/istream/istream/seekg/) seeks to a position in an _input_ stream.
 4. [seekp](http://www.cplusplus.com/reference/ostream/ostream/seekp/) seeks to a position in an _output_ stream.
+
+##Making index files
+In order to build an index file for your data, simply call the relevant tell functions before you write a new record.  Write these positions to an index file.  Then, use the appropriate seek function to move to the correct place.  There are trivial examples (C++) provided with this repo.  A real-world index file would be more than a list of offsets. Often, another column would be needed that identifies the record with some sort of unique ID.  (The need for an ID will be very important for situations where multiple processes write to the same file.  Often, record order in output files will become random.  See the file locking section below.)
+
+##Examples of indexing
+
+A (complex) example of a forward simulation writing uncompressed binary data to a file is [here](https://github.com/molpopgen/fwdpp/blob/master/examples/diploid_binaryIO_ind.cc).  This example includes the technique of POSIX file locking so that multiple instances of a simulation (for example, run on different nodes of a cluser using different random number seeds) can all write to a single output file.
 
 Writing your plain-text data to a gzip output stream
 =======
