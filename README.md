@@ -161,8 +161,6 @@ Cons:
 
 1. Not totally convenient.  Have to read data back into buffers and then convert it to desired formats.  Bit of a drag.  (This con is specific to writing your plain-text data to a gzfile via gzprintf.  We'll fix this below).
 
-##Note
-There are many more advanced functions in zlib other than the higher-level analogs to the _stdio.h_ functions.  The library source comes with examples of use.  These functions are lower-level and more complex, but provider finer control over reading/writing from compressed streams.
 
 ##Compiling against zlib
 Simply add this at link time:
@@ -175,6 +173,10 @@ For example:
 ```{sh}
 cc -o gzexample gzexample.cc -O2 -Wall -W -lz
 ```
+
+##Disclaimer/full disclosure
+
+Technically, zlib supports _two_ types of data compression.  The first is the gzip format, which is accessed using zlib's functions with "gz" in the name.  This part of zlib provided the functions with analagous functionality to C's \<stdio.h\> header.  The second format supported by zlib is the zlib format.  The rest of the zlib library is devoted to that format.
 
 ##What about boost?
 
