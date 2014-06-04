@@ -52,6 +52,39 @@ C++ lets you use the C functions described previously.  In addition to those fun
 3. [seekg](http://www.cplusplus.com/reference/istream/istream/seekg/) seeks to a position in an _input_ stream.
 4. [seekp](http://www.cplusplus.com/reference/ostream/ostream/seekp/) seeks to a position in an _output_ stream.
 
+##R functions for seeking
+Whenever possible, I write my C/C++ programs so that the output can be read into R.  R has the ability to seek to positions in files:
+
+```
+#open for reading
+f = file("infile.txt","r")
+```
+
+In the above block, file is a function returning what R calls a "connection".  See "help(connection)" for a list of the various types of connections that R supports.
+
+Once open, you may seek within most types of connections:
+
+```
+seek( connection, offset)
+```
+
+In my experience, seeking in R works fine with the following types of connections:
+
+1.  Plain-text files.
+2.  Gzipped files.  These are connections open with gzfile("file.gz","r")
+3.  Uncompressed binary.  file("file.bin","rb")
+4.  Gzipped binary.  gzfile("file.bin.gz","rb")
+
+For example, let's say you have lots of data frames in a plain-text file.  Prior to each data frame, there is an integer saying how many rows are in the following table.  The offsets from your index file refer to where this integer starts.  To read the i-th table:
+
+```
+f=file("file.txt","r")
+seek(f, offset_to_ith_record)
+nr=scan(f,nmax=1)
+x = read.table(f,nrows=nr,header=TRUE)
+```
+
+
 ##Making index files
 In order to build an index file for your data, simply call the relevant tell functions before you write a new record.  Write these positions to an index file.  Then, use the appropriate seek function to move to the correct place.  There are trivial examples (C++) provided with this repo.  A real-world index file would be more than a list of offsets. Often, another column would be needed that identifies the record with some sort of unique ID.  (The need for an ID will be very important for situations where multiple processes write to the same file.  Often, record order in output files will become random.  See the file locking section below.)
 
