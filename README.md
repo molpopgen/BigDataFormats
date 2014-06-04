@@ -52,7 +52,7 @@ C++ lets you use the C functions described previously.  In addition to those fun
 3. [seekg](http://www.cplusplus.com/reference/istream/istream/seekg/) seeks to a position in an _input_ stream.
 4. [seekp](http://www.cplusplus.com/reference/ostream/ostream/seekp/) seeks to a position in an _output_ stream.
 
-##R functions for seeking
+###R functions for seeking
 Whenever possible, I write my C/C++ programs so that the output can be read into R.  R has the ability to seek to positions in files:
 
 ```
