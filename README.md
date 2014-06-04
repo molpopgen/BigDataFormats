@@ -29,13 +29,17 @@ Typically, the offset will be stored as a long int.  This is fairly obvious in [
 
 ###C++ functions for seeking
 
-Gzipped
+Writing your plain-text data to a gzip output stream
 =======
-A gzipped or ".gz" file is probably the simplest way to move away from plain text files.  The final output is the same, but the file size is much smaller.
+A gzipped or ".gz" file is probably the simplest way to move away from plain text files.  The final output is the same, but the file size is much smaller.  
 
 You get .gz output via the use of the [zlib](http://zlib.net) run-time library.  This library is a C-language interface to gzip compression, and provideds function-for-function analogs to many of the C-library \<stdio.h\> read, write, fprintf, etc. that C programmers will be familiar with.
 
 The zlib [manual](http://zlib.net/manual.html) is excellent and straightforward.  I recommend making sure that you have version >= 1.2.5 on your system, which provides the _gzbuffer_ function.
+
+The most obvious application for a first-time zlib user will be to write your plain-text data to a gzipped file.   Doing so makes your files smaller, and they can still be read via standard command-line utilities like zless and zcat (or gunzip -C if you are on OS X).   This sort of output is the equivalent of writing your plain-text files as normal, then following up with a gzip command to compress them.  Doing so is fine, but does have side effects.  First, there is the extra time required.  Second, you need extra space for some period of time while gzip is doing its work.  Using zlib lets you skip the extra step.
+
+This section concerns plain-text data being written to a compressed outputs stream using zlib.
 
 ```{c}
 #include <zlib.h>
@@ -329,6 +333,77 @@ There are also writeBin and writeChar, for output.
 Gzipped binary
 ======
 
+The previous two sections covered zlib (in its most basic form) and introduced binary data as an output format.  Both have merits of their own can can be productively used for informatics application.  However, zlib's basic functions are a little tricky because when you gzprintf an integer or a float, there's no easy gzscanf to bring it back in.  Similarly, binary files are a problem because they actually aren't all that small.  Fortunately, it is trivial to merge the two types of output.   In fact, zlib natively supports this, by providing gzwrite(), an analog to the write() function used above!
+
+Here is an example in C (the source is [here](examples/zlib/gzwrite.c)):
+
+```{c}
+/*
+  Example of gzwrite using binary data
+
+  cc -o gzwrite gzwrite.c -lm -lgz
+ */
+#include <zlib.h>
+
+#include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+
+int main( int argc, char ** argv )
+{
+  size_t MAX = 100;
+  double * x = (double *)malloc( MAX * sizeof( double ) ),
+    *x2 = (double *)malloc( MAX * sizeof( double ) );
+
+  gzFile gzfp = gzopen("out.gz","wb");
+  size_t i;
+
+  for( i = 0 ; i < MAX ; ++i )
+    {
+      x[i] = sin(i);
+    }
+
+  gzwrite( gzfp, x, MAX*sizeof(double) );
+  gzclose( gzfp );
+
+  gzfp = gzopen( "out.gz", "rb" );
+
+  gzread(gzfp, x2, MAX*sizeof(double) );
+  
+  for( i = 0 ; i < MAX ; ++i )
+    {
+      fprintf(stdout,"%lf %lf\n",x[i],x2[i]);
+    }
+  free(x);
+  free(x2);
+  exit(0);
+}
+```
+
+Executing the above program (compile it in the examples/zlib directory using "make", then run it) and then giving the following command:
+
+```{sh}
+zless out.gz
+```
+
+will print what looks like gibberish to the screen.  That gibberish is the sin function applied to the values 0 through 99, with the results written to the compressed stream in native binary format.
+
+The extension to C++ should be obvious, as you just write your buffers using gzwrite.  Two methods may be used.
+
+First:
+
+```{c++}
+vector< int > x;
+//fill x somehow
+gzwrite( gzstream, x.data(), x.size()*sizeof(int) );
+```
+
+Second:
+```{c++}
+ostringstream buffer;
+//fill buffer by conversion to binary via reinterpret_cast
+gzwrite( gzstream, buffer.str().c_str(), buffer.str().size() );
+```
 
 File locking
 ======
