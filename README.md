@@ -178,6 +178,8 @@ cc -o gzexample gzexample.cc -O2 -Wall -W -lz
 
 Technically, zlib supports _two_ types of data compression.  The first is the gzip format, which is accessed using zlib's functions with "gz" in the name.  This part of zlib provided the functions with analagous functionality to C's \<stdio.h\> header.  The second format supported by zlib is the zlib format.  The rest of the zlib library is devoted to that format.
 
+The zlib and the gzip format are not the same!  I (KRT) have never used the zlib format and have zero idea if files written using that format are readable by R, etc.
+
 ##What about boost?
 
 The [boost](http://www.boost.org) libraries have advanced stream classes that let you read/write gzip and bzip data.  These are super-awesome, in that they allow direct reading and writing to compressed files for any objects that have input and output operators defined for them.  However, the input streams are not seekable, which is a major drawback for us.  If you attempt to seek to a point in a gzip stream using boost, the stream goes into a bad/fail state.  I do not know why this is the case (zlib supports seeking, and is the base for the boost impementation), but it is what it is, so we move on.  Sad.
