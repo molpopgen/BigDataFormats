@@ -291,12 +291,12 @@ General guidelines for binary output are:
 
 For anything other than character data, use readBin:
 
-```{R} 
- #open for reading in binary mode
+``` 
+#open for reading in binary mode
 f = file("file.bin","rb")
- #read in number of records
+#read in number of records
 nrecs = readBin(f, "integer", 1)
- #read in nrecs floating-points, which are sizeof(double)
+#read in nrecs floating-points, which are sizeof(double)
 x=readBin(f, "numeric", nrecs)
 ```
 
