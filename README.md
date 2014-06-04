@@ -564,3 +564,5 @@ cat $PIPENAME | atomic_locker $SGE_TASK_ID index.txt output.txt
 #cleanup
 rm -f $PIPENAME
 ```
+
+Currently, atomic\_locker only supports plain text input/output.  Future versions will support gzip via zlib.
