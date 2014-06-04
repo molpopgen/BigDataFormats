@@ -355,7 +355,7 @@ The above two code blocks can easily be done using the write and read functions 
 General guidelines for binary output are:
 
 1.  Keep it simple.  Allow for entire vectors to be slurped in.
-2.  If you want to read your files into [R](http://r-project.org), don't be too clever!  Any knowledgable programmer reading this has already realized that files can be made smaller by using types with fewer bits, etc.  That is true.  However, it means you really will need to document the format precisely, and you'll need to get intimate with how R treats variable sizes.  Personally, I stick to integers (signed and unsigned), floating-point, and character strings.  I skip short ints, bools, etc.
+2.  If you want to read your files into [R](http://r-project.org), don't be too clever!  Any knowledgable programmer reading this has already realized that files can be made smaller by using types with fewer bits, etc.  That is true ([example](examples/binary/intSizes.cc)).  However, it means you really will need to document the format precisely, and you'll need to get intimate with how R treats variable sizes.  Personally, I stick to integers (signed and unsigned), floating-point, and character strings.  I skip short ints, bools, etc.
 3.  If you desire max speed, buffer data into vectors of the specific type (see above).  Otherwise, buffer into an ostringstream because it is so easy.  (I do the latter usually--laziness FTW.)
 
 ##Examples of binary formats
