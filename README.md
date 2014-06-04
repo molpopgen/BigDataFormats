@@ -476,7 +476,8 @@ HDF5
 =====
 
 File locking 
- ====== 
+======
+ 
  This section describes a technique for managing output, not an output format. 
  
  It is becoming more common for biology researchers to have access to large compute clusters.  These clusters are often campus resources shared between many campus units and therefore have to serve the needs of loads of users.  Some sort of queuing software (such as [OGS](http://gridscheduler.sourceforge.net/) or [SoGE](https://arc.liv.ac.uk/trac/SGE)) will match up a user's need with available resources and the job will run when resources become available. 
