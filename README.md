@@ -40,7 +40,10 @@ The zlib library (see below) provides analagous functions:
 2. gzoffset -- "Returns the current offset in the file being read or written. This offset includes the count of bytes that precede the gzip stream, for example when appending or when using gzdopen() for reading. When reading, the offset does not include as yet unused buffered input. This information can be used for a progress indicator. On error, gzoffset() returns –1."
 3. gzseek -- "Sets the starting position for the next gzread or gzwrite on the given compressed file. The offset represents a number of bytes in the uncompressed data stream. The whence parameter is defined as in lseek(2); the value SEEK_END is not supported."
 
-__Note:__ gzseek is emulated for files opened for reading.  It can be slow.  But, it exists, which is very useful.
+Some very important notes:
+
+1. gzseek is emulated for files opened for reading.  It can be slow.  But, it exists, which is very useful.
+2. gztell always returns 0 for a freshly-opened gzfile.  This happens _even if you open the file in append mode_!!!!  Implication: zlib is not easily compatible with file-locking methods (see below) and index files must be generated either-after-the fact and/or by a _single instance_ of a program generating the output file.  After a call to gzwrite/gzprintf, gztell returns the offset in bytes since the file was opened.
 
 
 ###C++ functions for seeking
@@ -472,8 +475,19 @@ ostringstream buffer;
 gzwrite( gzstream, buffer.str().c_str(), buffer.str().size() );
 ```
 
+##Major caveat
+This format is not ideal for all situations:
+
+1.  See the notes above on the limitations of zlib's gztell function.  The only way to index a gz file is to read it after it has been created and record the starts of each record as you read through it.
+2.  Because zlib hides the file descriptor from you, it is tricky to get this format to work nicely with POSIX file locking.
+
+As a reult of these two points, our simulation programs that use binary output do not write compressed output.
+
+
 HDF5
 =====
+
+On paper, the gzipped binary format described above will get you pretty far.  Either "gzbinary" or plain binary output are my go-to methods, and reflects the fact that a lot of the development that I do revolves around simulation.  For many computational biologists, the problems involve massive amounts of data that are a mix of text and numbers.  These include alignment data (SAM/BAM files in many cases), genotype data (VCF, of which there are at least two varieties), etc.
 
 File locking 
 ======
