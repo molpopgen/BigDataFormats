@@ -4,7 +4,11 @@ This document covers various ways to handle large data sets, with an emphasis on
 
 Example code is centered on C/C++, and a basic understanding of those languages is assumed.
 
-We will start with gzip output, which is probably what most people will think of when wishing to move beyond plain text.  gzip is a great format, but not necessarily the most convenient for programming in languages like C/C++.  As we move down the list of formats and techniques, we'll end up with formats that are more and more convenient, while also being very efficient.
+We will start with gzip output, which is probably what most people will think of when wishing to move beyond plain text.  gzip is a great format, but not necessarily the most convenient for programming in languages like C/C++.  As we move down the list of formats and techniques, we'll end up with formats that are more and more convenient, while also being very efficient.  However, not all formats are suitable for all purposes.
+
+#Cliff's note version of how to choose a format
+
+(Will come later)
 
 #What features do we want in our "Big Data" programs?
 
