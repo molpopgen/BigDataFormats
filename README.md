@@ -47,7 +47,7 @@ The zlib library (see below) provides analagous functions:
 Some very important notes:
 
 1. gzseek is emulated for files opened for reading.  It can be slow.  But, it exists, which is very useful.
-2. gztell always returns 0 for a freshly-opened gzfile.  This happens _even if you open the file in append mode_!!!!  Implication: zlib is not easily compatible with file-locking methods (see below) and index files must be generated either-after-the fact and/or by a _single instance_ of a program generating the output file.  After a call to gzwrite/gzprintf, gztell returns the offset in bytes since the file was opened.
+2. gztell always returns 0 for a freshly-opened gzfile.  This happens _even if you open the file in append mode_!!!!  Implication: zlib is not easily compatible with file-locking methods (see below) and index files must be generated either-after-the fact and/or by a _single instance_ of a program generating the output file.  After a call to gzwrite/gzprintf, gztell returns the offset in bytes since the file was opened.  You will likely need to resort to external locking mechanisms and after-the fact indexing.
 
 
 ###C++ functions for seeking
