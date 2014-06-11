@@ -47,8 +47,17 @@ The zlib library (see below) provides analagous functions:
 Some very important notes:
 
 1. gzseek is emulated for files opened for reading.  It can be slow.  But, it exists, which is very useful.
-2. gztell always returns 0 for a freshly-opened gzfile.  This happens _even if you open the file in append mode_!!!!  Implication: zlib is not easily compatible with file-locking methods (see below) and index files must be generated either-after-the fact and/or by a _single instance_ of a program generating the output file.  After a call to gzwrite/gzprintf, gztell returns the offset in bytes since the file was opened.  You will likely need to resort to external locking mechanisms and after-the fact indexing.
+2. gztell always returns 0 for a freshly-opened gzfile.  This happens _even if you open the file in append mode_!!!!
 
+Point number two means that you cannot write an index file that looks like the above table.  However, you could write one that looks like this:
+
+|Record Name | Size|
+|----|:-----:|
+| chr1 | 1024 |
+| chr2 | 3072 |
+| chr3 | 512 |
+
+This index file actually contains the same data as the table in the previous section.  However, the second column no longer contains the offset where the i-th record begins.  Rather _it contains the size of the i-th record in bytes._  Therefore, the offset where the data for chr3 begins is the sum of all sizes preceeding the entry for chr3 in the index file.
 
 ###C++ functions for seeking
 
@@ -546,6 +555,11 @@ Examples:
 4.  Close the file before releasing the lock.
 
 Failure to do any of the above may result in "constipation", where loads of jobs are sitting around waiting for the lock to release.  See the examples for working code that I use routinely on clusters.
+
+If you are building an index file along with your output file, the following ideas may come in useful:
+
+1.  Simplify your life and make you index file either plain-text or uncompressed binary
+2.  Request the lock on the index file only.  Then, write the data and update the index file, and release the lock on the index file.
 
 ##What about programs that you didn't write?
 
