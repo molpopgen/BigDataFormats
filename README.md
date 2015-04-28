@@ -337,8 +337,9 @@ How does one write out all those names?  With no whitespace separator, you need 
 
 1.  Write every string as a fixed-width number of characters.  I never do this.
 2.  Write each string as an unsigned integer representing its length, followed by that many characters.
+3.  Write all strings plus the null character '\0', and then read all string data until the '\0' is reached.
 
-I always take the second option:
+I always take the second option (although I should switch to the third...):
 
 ```c++
 string x("I am a string!");
