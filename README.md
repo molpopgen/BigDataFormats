@@ -6,18 +6,18 @@ Example code is centered on C/C++, and a basic understanding of those languages 
 
 We will start with gzip output, which is probably what most people will think of when wishing to move beyond plain text.  gzip is a great format, but not necessarily the most convenient for programming in languages like C/C++.  As we move down the list of formats and techniques, we'll end up with formats that are more and more convenient, while also being very efficient.  However, not all formats are suitable for all purposes.
 
-#Cliff's note version of how to choose a format
+# Cliff's note version of how to choose a format
 
 (Will come later)
 
-#What features do we want in our "Big Data" programs?
+# What features do we want in our "Big Data" programs?
 
 1.  File output size isn't too big, but we want to write feweer larger files rather than millions of tiny files.
 2.  We should generally write large blocks of data, rather than printing to a file every time we get an answer
 3.  We should be able to seek within our files.  The ability to seek means that we can write a second (small) file telling us where every data record begins.  This "index" lets us rapidly move around the file to where records start, meaning we don't need to start reading from the top of the file each time we wish to find a specific data point.
 4.  The format should not result in loss of precision.  Typically, when one writes floating-point numbers to a file, they are rounded.  We would like a format that avoids this, allowing us to read back in exatly what our program stored.
 
-##How to seek, etc.
+## How to seek, etc.
 
 For very large data sets, some sort of meaningful index is handy.   The simplest index is a plain-text file that gives the position (in bytes) where a data record begins in a file.  For example:
 
@@ -29,7 +29,7 @@ For very large data sets, some sort of meaningful index is handy.   The simplest
 
 Typically, the offset will be stored as a long int.  This is fairly obvious in [C](http://www.cplusplus.com/reference/cstdio/ftell/).  It is a little more obsurce in C++, as the type is called [streampos](http://www.cplusplus.com/reference/ios/streampos/).  Usually, you can use long int or long long int, and most programs will be fine.
 
-###C functions for seeking
+### C functions for seeking
 
 There are two main functions as part of the standard language:
 
@@ -38,11 +38,14 @@ There are two main functions as part of the standard language:
 
 The zlib library (see below) provides analagous functions:
 
-(All function descriptions are direct copy/pastes from the zlib [manual](http://zlib.net/manual.html), hence the quotes.)
+(All function descriptions are direct copy/pastes from the zlib [manual])http://zlib.net/manual.html
 
-1. gztell -- "Returns the starting position for the next gzread or gzwrite on the given compressed file. This position represents a number of bytes in the uncompressed data stream, and is zero when starting, even if appending or reading a gzip stream from the middle of a file using gzdopen()."
-2. gzoffset -- "Returns the current offset in the file being read or written. This offset includes the count of bytes that precede the gzip stream, for example when appending or when using gzdopen() for reading. When reading, the offset does not include as yet unused buffered input. This information can be used for a progress indicator. On error, gzoffset() returns –1."
-3. gzseek -- "Sets the starting position for the next gzread or gzwrite on the given compressed file. The offset represents a number of bytes in the uncompressed data stream. The whence parameter is defined as in lseek(2); the value SEEK_END is not supported."
+1. gztell 
+> Returns the starting position for the next gzread or gzwrite on the given compressed file. This position represents a number of bytes in the uncompressed data stream, and is zero when starting, even if appending or reading a gzip stream from the middle of a file using gzdopen().
+2. gzoffset 
+> Returns the current offset in the file being read or written. This offset includes the count of bytes that precede the gzip stream, for example when appending or when using gzdopen() for reading. When reading, the offset does not include as yet unused buffered input. This information can be used for a progress indicator. On error, gzoffset() returns –1.
+3. gzseek 
+> Sets the starting position for the next gzread or gzwrite on the given compressed file. The offset represents a number of bytes in the uncompressed data stream. The whence parameter is defined as in lseek(2); the value SEEK_END is not supported.
 
 Some very important notes:
 
@@ -59,7 +62,7 @@ Point number two means that you cannot write an index file that looks like the a
 
 This index file actually contains the same data as the table in the previous section.  However, the second column no longer contains the offset where the i-th record begins.  Rather _it contains the size of the i-th record in bytes._  Therefore, the offset where the data for chr3 begins is the sum of all sizes preceeding the entry for chr3 in the index file.
 
-###C++ functions for seeking
+### C++ functions for seeking
 
 C++ lets you use the C functions described previously.  In addition to those functions, C++ streams have the following member functions:
 
@@ -68,7 +71,7 @@ C++ lets you use the C functions described previously.  In addition to those fun
 3. [seekg](http://www.cplusplus.com/reference/istream/istream/seekg/) seeks to a position in an _input_ stream.
 4. [seekp](http://www.cplusplus.com/reference/ostream/ostream/seekp/) seeks to a position in an _output_ stream.
 
-###R functions for seeking
+### R functions for seeking
 Whenever possible, I write my C/C++ programs so that the output can be read into R.  R has the ability to seek to positions in files:
 
 ```
@@ -101,10 +104,10 @@ x = read.table(f,nrows=nr,header=TRUE)
 ```
 
 
-##Making index files
+## Making index files
 In order to build an index file for your data, simply call the relevant tell functions before you write a new record.  Write these positions to an index file.  Then, use the appropriate seek function to move to the correct place.  There are trivial examples (C++) provided with this repo.  A real-world index file would be more than a list of offsets. Often, another column would be needed that identifies the record with some sort of unique ID.  (The need for an ID will be very important for situations where multiple processes write to the same file.  Often, record order in output files will become random.  See the file locking section below.)
 
-##Examples of indexing
+## Examples of indexing
 
 A (complex) example of a forward simulation writing uncompressed binary data to a file is [here](https://github.com/molpopgen/fwdpp/blob/master/examples/diploid_binaryIO_ind.cc).  This example includes the technique of POSIX file locking so that multiple instances of a simulation (for example, run on different nodes of a cluser using different random number seeds) can all write to a single output file.
 
@@ -211,7 +214,7 @@ Cons:
 1. Not totally convenient.  Have to read data back into buffers and then convert it to desired formats.  Bit of a drag.  (This con is specific to writing your plain-text data to a gzfile via gzprintf.  We'll fix this below).
 
 
-##Compiling against zlib
+## Compiling against zlib
 Simply add this at link time:
 ```
 -lz
@@ -229,7 +232,7 @@ Technically, zlib supports _two_ types of data compression.  The first is the gz
 
 The zlib and the gzip format are not the same!  I (KRT) have never used the zlib format and have zero idea if files written using that format are readable by R, etc.
 
-##What about boost?
+## What about boost?
 
 The [boost](http://www.boost.org) libraries have advanced stream classes that let you read/write gzip and bzip data.  These are super-awesome, in that they allow direct reading and writing to compressed files for any objects that have input and output operators defined for them.  However, the input streams are not seekable, which is a major drawback for us.  If you attempt to seek to a point in a gzip stream using boost, the stream goes into a bad/fail state.  I do not know why this is the case (zlib supports seeking, and is the base for the boost impementation), but it is what it is, so we move on.  Sad.
 
@@ -257,30 +260,30 @@ The cons are:
 5.  You may want to write your data out differently from how you'd write a plain-text file.  More on this later.
 6.  They are nowhere near as small as a compressed format like zlib/gz.
 
-##What are we going to learn?
+## What are we going to learn?
 
 In the examples, the following will become apparent:
 
 1.  There are multiple ways to write binary output to files.  They boil down to C's "write" function and C++'s write function, which is a member function of stream classes.
 2.  There are tradeoffs to make between convenience and efficiency.  More on this after the examples.
 
-##Examples
+## Examples
 
 The following two programs are identical in terms of what they are doing.  The first is in C and writes to files via file descriptors.  The second is in C++ and works via output streams.  Typically, I use a mix of C and C++ to try to maximize the convenience of object-oriented programming (C++) with the very fast I/O routines of C.
 
-##Example in C:
+## Example in C:
 
 The first example in C is [here](examples/binary/binaryC.c).
 
 This example buffers data in a pointer to doubles and shows how to use either the low-level open function for creating files or how to use a mix of fopen/fileno to be able to later call write() for writing to files.
 
-##Mixed C/C++ example
+## Mixed C/C++ example
 The example is trivially changed to C++ by replacing arrays with vectors, using the C++ versions of the headers, and declaring variables when we need them.
 
 [Trivial C++ example](examples/binary/binaryCpp.cc)
 
 
-##A "Full-C++" example
+## A "Full-C++" example
 The above C++ example is not very insightful, as it basically uses the bare minimum of C++'s features.  Let's look at a C++ implementation that uses more of that language's features.  This example will introduce the following:
 
 1. The use of reinterpret_cast to convert data types to a binary representation.
@@ -288,7 +291,7 @@ The above C++ example is not very insightful, as it basically uses the bare mini
 3. Write to a buffer and flush the buffer to a file when it gets full.  This mimics what we want to do in real-world programs, which is to internally buffer large chunks of data in order to avoid small writes to files.
 4. Doing everything the "C++ way", _e.g._ doing everything with objects rather than C functions.
 
-["Full-c++" example](examples/binary/binaryCpp2.cc)
+#### ["Full-c++" example](examples/binary/binaryCpp2.cc)
 
 This "full C++" example is easy to code, but which of the above is the fastest?  Testing on my powerbook (OS X Mavericks w/clang-503.0.40) gives the following benchmarks:
 
@@ -303,11 +306,11 @@ We can get most of the speed back by buffering into a vector<double> rather than
 
 This example takes 0.086 seconds on my machine, in between the fastest and slowest examples above:
 
-[Example of buffering in a vector\<double\>](examples/binary/binaryCpp3.cc)
+#### [Example of buffering in a vector\<double\>](examples/binary/binaryCpp3.cc)
 
 I take this as evidence that C++ input/output streams are not as slow as many people fear.
 
-##Design considerations
+## Design considerations
 
 Binary files are essentially a vomit of raw data to a file.  No white space, newlines, etc.  Worse, you cannot read them by eye, so you have to know the precise format of the output in order to read it back in.  That means you really need to document the format precisely.  Better yet, provide a function to read in the data using the same language used to write the data.
 
@@ -375,14 +378,14 @@ General guidelines for binary output are:
 2.  If you want to read your files into [R](http://r-project.org), don't be too clever!  Any knowledgable programmer reading this has already realized that files can be made smaller by using types with fewer bits, etc.  That is true ([example](examples/binary/intSizes.cc)).  However, it means you really will need to document the format precisely, and you'll need to get intimate with how R treats variable sizes.  Personally, I stick to integers (signed and unsigned), floating-point, and character strings.  I skip short ints, bools, etc.
 3.  If you desire max speed, buffer data into vectors of the specific type (see above).  Otherwise, buffer into an ostringstream because it is so easy.  (I do the latter usually--laziness FTW.)
 
-##Examples of binary formats
+## Examples of binary formats
 
 Here are some examples from my own work.  Both of these use an approach similar to run-lenght encoding (RLE) to avoid writing out entire data blocks.
 
 1.  [Reading/writing output from coalescent simulations](https://github.com/molpopgen/libsequence/blob/master/src/SimDataIO.cc).
 2.  Output from forward simulation.  Specific simulation input/output is governed by custom policy classes.  Example is [here](https://github.com/molpopgen/fwdpp/blob/master/examples/diploid_binaryIO_ind.cc).
 
-##Reading binary in R
+## Reading binary in R
 
 For anything other than character data, use readBin:
 
@@ -489,7 +492,7 @@ ostringstream buffer;
 gzwrite( gzstream, buffer.str().c_str(), buffer.str().size() );
 ```
 
-##Major caveat
+## Major caveat
 This format is not ideal for all situations:
 
 1.  See the notes above on the limitations of zlib's gztell function.  The only way to index a gz file is to read it after it has been created and record the starts of each record as you read through it.
@@ -506,14 +509,15 @@ On paper, the gzipped binary format described above will get you pretty far.  Ei
 File locking 
 ======
 
-##Small files = bad
- This section describes a technique for managing output, not an output format. 
+## Small files = bad
+
+This section describes a technique for managing output, not an output format. 
  
- It is becoming more common for biology researchers to have access to large compute clusters.  These clusters are often campus resources shared between many campus units and therefore have to serve the needs of loads of users.  Some sort of queuing software (such as [OGS](http://gridscheduler.sourceforge.net/) or [SoGE](https://arc.liv.ac.uk/trac/SGE)) will match up a user's need with available resources and the job will run when resources become available. 
+It is becoming more common for biology researchers to have access to large compute clusters.  These clusters are often campus resources shared between many campus units and therefore have to serve the needs of loads of users.  Some sort of queuing software (such as [OGS](http://gridscheduler.sourceforge.net/) or [SoGE](https://arc.liv.ac.uk/trac/SGE)) will match up a user's need with available resources and the job will run when resources become available. 
  
- Large clusters often have some sort of network-mounted storage in the form of a distributed (or clustered) [file system](http://en.wikipedia.org/wiki/Clustered_file_system).  Such file systems make cluster use easier and can result in impressive I/O bandwidth.  However, there is one sure-fire way to overload such systems, and even bring them down.  A job that writes thousands of small files over a long period of time can wreak havok.  Performance of the file system will degrade cluster-wide, and the file system server may even crash.  (Note, different implementations of such file systems are differently-susceptible to this problem.  NFS and gluster don't handle "zillions of tiny files" well.  The [fhgfs](http://www.fhgfs.com/cms/)  system is much more robust in our experience. ) 
+Large clusters often have some sort of network-mounted storage in the form of a distributed (or clustered) [file system](http://en.wikipedia.org/wiki/Clustered_file_system).  Such file systems make cluster use easier and can result in impressive I/O bandwidth.  However, there is one sure-fire way to overload such systems, and even bring them down.  A job that writes thousands of small files over a long period of time can wreak havok.  Performance of the file system will degrade cluster-wide, and the file system server may even crash.  (Note, different implementations of such file systems are differently-susceptible to this problem.  NFS and gluster don't handle "zillions of tiny files" well.  The [fhgfs](http://www.fhgfs.com/cms/)  system is much more robust in our experience. ) 
  
- Here is an example of how to use a cluster to create gazillions of tiny files.  This is a hypothetical Grid Engine script that will run 100,000 replicates of a simulation.  Each replicate will be _written to a separate file_.  If this job gets access to hundreds of nodes, the file system may start to freak out and bad things may happen: 
+Here is an example of how to use a cluster to create gazillions of tiny files.  This is a hypothetical Grid Engine script that will run 100,000 replicates of a simulation.  Each replicate will be _written to a separate file_.  If this job gets access to hundreds of nodes, the file system may start to freak out and bad things may happen: 
  
  ```{sh} 
  #!/bin/bash 
@@ -527,11 +531,11 @@ File locking
 
 How can one avoid writing all of these files, but still be able to use hundreds of cores to run the simulation via the simplicity of array jobs?  If you are programming for a [POSIX](http://en.wikipedia.org/wiki/POSIX) environment (Linux and OS X Mavericks are POSIX-compliant), then you may make use of low-level C funtions enabling "file locking".
 
-##What is file locking?
+## What is file locking?
 
 File locking is a communication between your program and the OS kernel.  When a program wants to write, it may ask the kernel for an exclusive "lock" on the output file.  If no other process is currently locking the file, the requesting process gets the go-ahead and may write.  If the file is locked by another process, the requesting process may decide to wait or quit, etc.  After the process writes, it releases the lock so that another process may access it.
 
-##How to do it (C/C++)?
+## How to do it (C/C++)?
 
 You make use of the low-level file access function fcntl() in [\<fcntl.h\>](http://pubs.opengroup.org/onlinepubs/000095399/basedefs/fcntl.h.html).  This function lets you control all sorts of things regarding file access.
 
@@ -539,7 +543,7 @@ Some notes are needed:
 
 1. fcntl() works via file descriptors rather than file pointers.  Thus, it is not compatible with C++ streams, which have no descriptor associated with them.  Learn how to use the C function fileno() to get the file descriptor associated with a FILE *!  (The statment about C++ refers to the language standard.  Various extensions exist that provide access to file descriptors.  Not portable, so we don't care.)
 
-##Examples of file locking:
+## Examples of file locking:
 
 For my own work, the most common case use is simulation, where we need to generate a large number of replicates of the output of the same program.  Such tasks are amenable to array jobs and file locking helps prevent the "lots of output files" problem.
 
@@ -548,7 +552,7 @@ Examples:
 1. [locking_routines](https://github.com/molpopgen/locking_routines) is a repo that I maintain so that I can re-use common locking operations.
 2. [here](https://github.com/molpopgen/fwdpp/blob/master/examples/diploid_binaryIO_ind.cc) is a real-world example in the context of a simulation.
 
-##Program design tips
+## Program design tips
 
 1.  Do not request a lock until your program needs to write.
 2.  Do not open files for writing until your program needs to write.  Buffer output (see above).  Request the lock when the buffer is full, and then open the file for writing.
@@ -562,7 +566,7 @@ If you are building an index file along with your output file, the following ide
 1.  Simplify your life and make you index file either plain-text or uncompressed binary
 2.  Request the lock on the index file only.  Then, write the data and update the index file, and release the lock on the index file.
 
-##What about programs that you didn't write?
+## What about programs that you didn't write?
 
 If a program prints to screen, and you cannot modify the code, try [atomic_locker](https://github.com/molpopgen/atomic_locker).  The UCI IT team have written a perl [program](http://moo.nac.uci.edu/~hjm/Job.Array.ZOT.html#_file_locking_with_multiple_processes_writing_to_a_single_file) with similar functionality.
 
